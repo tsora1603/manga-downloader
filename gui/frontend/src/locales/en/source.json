@@ -27,6 +27,6 @@
     "action": "Search",
     "results": "Title search results",
     "empty": "No matching titles found.",
-    "needsKey": "Only ManGeek was searched. Add a Brave Search API key in Settings to include other supported sites."
+    "needsKey": "Only ManGeek was searched. Add a Tavily API key in Settings to include other supported sites."
   }
 }

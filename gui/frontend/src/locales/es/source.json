@@ -27,6 +27,6 @@
     "action": "Buscar",
     "results": "Resultados de la búsqueda",
     "empty": "No se encontraron títulos.",
-    "needsKey": "Solo se buscó en ManGeek. Añade una clave de la API de Brave Search en Ajustes para incluir otros sitios."
+    "needsKey": "Solo se buscó en ManGeek. Añade una clave de la API de Tavily en Ajustes para incluir otros sitios."
   }
 }

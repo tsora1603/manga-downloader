@@ -3,6 +3,7 @@
 package grabber
 
 import (
+	"bytes"
 	"context"
 	_ "embed"
 	"encoding/json"
@@ -10,6 +11,7 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"maps"
 	"net/http"
 	"net/url"
 	"os"
@@ -42,11 +44,11 @@ func searchKeyPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "manga-downloader", "brave-search-key"), nil
+	return filepath.Join(dir, "manga-downloader", "tavily-search-key"), nil
 }
 
-func braveKey() (string, error) {
-	if key := strings.TrimSpace(os.Getenv("BRAVE_SEARCH_API_KEY")); key != "" {
+func tavilyKey() (string, error) {
+	if key := strings.TrimSpace(os.Getenv("TAVILY_API_KEY")); key != "" {
 		return key, nil
 	}
 	path, err := searchKeyPath()
@@ -81,7 +83,7 @@ func SaveSearchKey(key string) error {
 	if err = os.MkdirAll(dir, 0700); err != nil {
 		return err
 	}
-	f, err := os.CreateTemp(dir, ".brave-key-*")
+	f, err := os.CreateTemp(dir, ".tavily-key-*")
 	if err != nil {
 		return err
 	}
@@ -99,14 +101,13 @@ func SaveSearchKey(key string) error {
 
 var searchClient = &http.Client{
 	Timeout: 15 * time.Second,
-	// Keep the subscription header on the API origin.
+	// Keep the bearer token on the API origin.
 	CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
 }
 
 type searchBatch struct {
 	lang  string
 	hosts map[string]string
-	rules string
 }
 
 func searchLanguageAllowed(hint, lang string) bool {
@@ -114,23 +115,22 @@ func searchLanguageAllowed(hint, lang string) bool {
 	return hint == "mixed" || slices.Contains(languages, lang) || (lang == "pt-br" && slices.Contains(languages, "pt"))
 }
 
-// Inline Goggles restrict the index before ranking. Split long rules into
-// separate requests so encoded GET URLs fit common 8 KiB request-line limits.
+// Tavily accepts up to 300 include_domains in one search.
+const tavilyDomainLimit = 300
+
 func searchBatches(lang string) []searchBatch {
 	var batches []searchBatch
-	b := searchBatch{lang: lang, hosts: map[string]string{}, rules: "$discard"}
+	b := searchBatch{lang: lang, hosts: map[string]string{}}
 	for line := range strings.Lines(searchSites) {
 		host, hint, _ := strings.Cut(strings.TrimSpace(line), "\t")
 		if host == "mangeek.app" || !searchLanguageAllowed(hint, lang) {
 			continue
 		}
-		rule := "\n$boost,site=" + host
-		if len(url.QueryEscape(b.rules+rule)) > 4800 {
+		if len(b.hosts) == tavilyDomainLimit {
 			batches = append(batches, b)
-			b = searchBatch{lang: lang, hosts: map[string]string{}, rules: "$discard"}
+			b = searchBatch{lang: lang, hosts: map[string]string{}}
 		}
 		b.hosts[host] = hint
-		b.rules += rule
 	}
 	if len(b.hosts) > 0 {
 		batches = append(batches, b)
@@ -138,12 +138,9 @@ func searchBatches(lang string) []searchBatch {
 	return batches
 }
 
-type braveHit struct {
-	Title, URL, Language string
-	Thumbnail            struct {
-		Src  string
-		Logo bool
-	}
+type tavilyHit struct {
+	Title, URL string
+	Images     []struct{ URL string }
 }
 
 func safeSearchURL(raw string) *url.URL {
@@ -154,7 +151,7 @@ func safeSearchURL(raw string) *url.URL {
 	return u
 }
 
-func (b searchBatch) match(h braveHit) (SeriesMatch, bool) {
+func (b searchBatch) match(h tavilyHit) (SeriesMatch, bool) {
 	u := safeSearchURL(h.URL)
 	if u == nil || u.Port() != "" {
 		return SeriesMatch{}, false
@@ -164,13 +161,16 @@ func (b searchBatch) match(h braveHit) (SeriesMatch, bool) {
 	if !ok {
 		return SeriesMatch{}, false
 	}
-	lang := strings.ToLower(strings.ReplaceAll(h.Language, "_", "-"))
-	switch {
-	case lang == "" && hint == b.lang:
-	case b.lang == "en" && (lang == "en" || strings.HasPrefix(lang, "en-")):
-	case b.lang == "pt-br" && (lang == "pt-br" || (lang == "pt" && (hint == "pt-br" || strings.Contains(strings.ToLower(u.Path), "/pt-br/") || strings.HasSuffix(host, ".br")))):
-	default:
-		return SeriesMatch{}, false
+	// Tavily strictly filters Portuguese but does not distinguish its regions.
+	if b.lang == "pt-br" {
+		locales := strings.Split(strings.ToLower(strings.ReplaceAll(u.Path, "_", "-")), "/")
+		params := u.Query()
+		for _, key := range []string{"lang", "language", "locale"} {
+			locales = append(locales, strings.ToLower(strings.ReplaceAll(params.Get(key), "_", "-")))
+		}
+		if slices.Contains(locales, "pt-pt") || (hint != "pt-br" && !strings.HasSuffix(host, ".br") && !slices.Contains(locales, "pt-br")) {
+			return SeriesMatch{}, false
+		}
 	}
 	title := sanitizeTitle(html.UnescapeString(h.Title))
 	if title == "" {
@@ -178,41 +178,60 @@ func (b searchBatch) match(h braveHit) (SeriesMatch, bool) {
 	}
 	u.Fragment = ""
 	m := SeriesMatch{Title: title, URL: u.String(), Language: b.lang, Source: host}
-	if thumb := safeSearchURL(h.Thumbnail.Src); thumb != nil && thumb.Scheme == "https" && !h.Thumbnail.Logo {
-		m.Thumbnail = thumb.String()
+	for _, image := range h.Images {
+		if thumb := safeSearchURL(image.URL); thumb != nil && thumb.Scheme == "https" {
+			m.Thumbnail = thumb.String()
+			break
+		}
 	}
 	return m, true
 }
 
 func (b searchBatch) search(ctx context.Context, client *http.Client, key, query string) ([]SeriesMatch, error) {
-	country := "US"
+	payload := map[string]any{
+		"query":                      query,
+		"include_domains":            slices.Sorted(maps.Keys(b.hosts)),
+		"max_results":                20,
+		"search_depth":               "basic",
+		"language":                   b.lang,
+		"filter_by_language":         true,
+		"include_images":             true,
+		"include_image_descriptions": true,
+	}
 	if b.lang == "pt-br" {
-		country = "BR"
+		payload["language"] = "pt"
+		payload["country"] = "brazil"
 	}
-	params := url.Values{
-		"q": {query}, "goggles": {b.rules}, "search_lang": {b.lang}, "country": {country},
-		"count": {"20"}, "result_filter": {"web"}, "text_decorations": {"false"},
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://api.search.brave.com/res/v1/web/search?"+params.Encode(), nil)
+	body, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("X-Subscription-Token", key)
-	req.Header.Set("Accept", "application/json")
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://api.tavily.com/search", bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+key)
+	req.Header.Set("Content-Type", "application/json")
 	res, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Brave Search is unreachable: %w", errors.Unwrap(err))
+		return nil, fmt.Errorf("Tavily is unreachable: %w", err)
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Brave Search returned HTTP %d (%s)", res.StatusCode, http.StatusText(res.StatusCode))
+		switch res.StatusCode {
+		case 401:
+			return nil, errors.New("Tavily rejected the API key (HTTP 401)")
+		case 432, 433:
+			return nil, fmt.Errorf("Tavily search credit limit reached (HTTP %d)", res.StatusCode)
+		}
+		return nil, fmt.Errorf("Tavily returned HTTP %d", res.StatusCode)
 	}
-	var data struct{ Web struct{ Results []braveHit } }
+	var data struct{ Results []tavilyHit }
 	if err = json.NewDecoder(io.LimitReader(res.Body, 4<<20)).Decode(&data); err != nil {
-		return nil, fmt.Errorf("invalid Brave Search response: %w", err)
+		return nil, fmt.Errorf("invalid Tavily response: %w", err)
 	}
 	var matches []SeriesMatch
-	for _, h := range data.Web.Results {
+	for _, h := range data.Results {
 		if m, ok := b.match(h); ok {
 			matches = append(matches, m)
 		}
@@ -231,7 +250,7 @@ func SearchSeries(query string) (SearchResults, error) {
 	if len([]rune(query)) > 600 || len(strings.Fields(query)) > 75 {
 		return out, errors.New("use a title of at most 600 characters and 75 words")
 	}
-	key, keyErr := braveKey()
+	key, keyErr := tavilyKey()
 	native, err := SearchManGeek(query)
 	if err != nil {
 		out.Warnings = append(out.Warnings, err.Error())
@@ -263,9 +282,6 @@ func SearchSeries(query string) (SearchResults, error) {
 		}
 	}
 	for i, b := range batches {
-		if i > 0 {
-			time.Sleep(time.Second)
-		}
 		matches, e := b.search(ctx, searchClient, key, query)
 		if e != nil {
 			out.Warnings = append(out.Warnings, e.Error())

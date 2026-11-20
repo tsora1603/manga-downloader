@@ -27,7 +27,7 @@ func init() {
 				fmt.Fprintln(cmd.ErrOrStderr(), warning)
 			}
 			if result.NeedsKey {
-				fmt.Fprintln(cmd.ErrOrStderr(), "Searching ManGeek only. Set BRAVE_SEARCH_API_KEY or save a key in the desktop app settings to search other sites.")
+				fmt.Fprintln(cmd.ErrOrStderr(), "Searching ManGeek only. Set TAVILY_API_KEY or save a key in the desktop app settings to search other sites.")
 			}
 			if asJSON {
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(result.Matches)

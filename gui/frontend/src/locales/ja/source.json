@@ -27,6 +27,6 @@
     "action": "検索",
     "results": "作品の検索結果",
     "empty": "該当する作品は見つかりませんでした。",
-    "needsKey": "ManGeekのみを検索しました。他の対応サイトも検索するには、設定でBrave SearchのAPIキーを登録してください。"
+    "needsKey": "ManGeekのみを検索しました。他の対応サイトも検索するには、設定でTavilyのAPIキーを登録してください。"
   }
 }

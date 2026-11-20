@@ -105,8 +105,8 @@ export function SettingsDialog({ state, onClose, onSaveSearchKey, onCheckUpdates
 
         <div className="settings-body">
           <form className="opt-group search-key" onSubmit={(e) => { e.preventDefault(); void storeKey(key.trim()); }}>
-            <label htmlFor="brave-key">{t('settings.search.key')}</label>
-            <input id="brave-key" type="password" value={key} disabled={saving} autoComplete="off"
+            <label htmlFor="tavily-key">{t('settings.search.key')}</label>
+            <input id="tavily-key" type="password" value={key} disabled={saving} autoComplete="off"
               onChange={(e) => { setKey(e.target.value); setKeyStatus(''); }} />
             <div>
               <button type="submit" className="btn small" disabled={saving || !key.trim()}>{t('settings.search.save')}</button>

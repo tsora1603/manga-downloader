@@ -14,11 +14,11 @@ button, *Load* and *Settings*. (To open on the full window instead, turn off
 
 Type a manga title in the URL box and press Enter or click **Search**. Each
 result shows its title, site, language and a thumbnail if available. Select
-a result to load its chapters. ManGeek works directly. To also search Brave’s
-index of supported English and Brazilian Portuguese sites, open **Settings**,
-enter your **Brave Search API key**, and click **Save key**. The app saves the
+a result to load its chapters. ManGeek works directly. To search the other
+supported English and Brazilian Portuguese sites with Tavily, open **Settings**,
+enter your **Tavily API key**, and click **Save key**. The app saves the
 key in the per-user configuration folder for both the app and the CLI. You can
-get a key from the [Brave Search API dashboard](https://api-dashboard.search.brave.com/).
+get a key from the [Tavily API dashboard](https://app.tavily.com/).
 Each title search can use several API requests.
 
 1. **Paste the series' URL** into the box (or use its *Paste* button). The

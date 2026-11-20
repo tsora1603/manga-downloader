@@ -27,6 +27,6 @@
     "action": "Cerca",
     "results": "Resultats de la cerca",
     "empty": "No s’han trobat títols.",
-    "needsKey": "Només s’ha cercat a ManGeek. Afegeix una clau de l’API de Brave Search a Configuració per incloure altres llocs."
+    "needsKey": "Només s’ha cercat a ManGeek. Afegeix una clau de l’API de Tavily a Configuració per incloure altres llocs."
   }
 }

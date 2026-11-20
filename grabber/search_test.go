@@ -4,13 +4,16 @@ package grabber
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 
@@ -21,31 +24,45 @@ type searchRoundTrip func(*http.Request) (*http.Response, error)
 
 func (f searchRoundTrip) RoundTrip(req *http.Request) (*http.Response, error) { return f(req) }
 
-func TestBraveSearchBatch(t *testing.T) {
-	b := searchBatch{lang: "pt-br", hosts: map[string]string{"test.com.br": "pt-br", "multi.example": "mixed", "portuguese.example": "pt"}, rules: "$discard\n$boost,site=test.com.br\n$boost,site=multi.example\n$boost,site=portuguese.example"}
+func TestTavilySearchBatch(t *testing.T) {
+	b := searchBatch{lang: "pt-br", hosts: map[string]string{"test.com.br": "pt-br", "multi.example": "mixed", "portuguese.example": "pt"}}
 	client := http.Client{Transport: searchRoundTrip(func(req *http.Request) (*http.Response, error) {
-		q := req.URL.Query()
-		if req.URL.Scheme != "https" || req.URL.Host != "api.search.brave.com" || q.Get("goggles") != b.rules || q.Get("q") != "A & B" || q.Get("country") != "BR" || q.Get("search_lang") != b.lang || req.Header.Get("X-Subscription-Token") != "test-only" || strings.Contains(req.URL.String(), "test-only") {
-			t.Fatal("invalid search request")
+		var payload struct {
+			Query, Country, Language string
+			Domains                  []string `json:"include_domains"`
+			Depth                    string   `json:"search_depth"`
+			Max                      int      `json:"max_results"`
+			Filter                   bool     `json:"filter_by_language"`
+			Images                   bool     `json:"include_images"`
+			Descriptions             bool     `json:"include_image_descriptions"`
 		}
-		body := `{"web":{"results":[
-		{"title":"A &amp; B","url":"https://www.test.com.br/serie/ab#top","language":"pt","thumbnail":{"src":"https://img.example/c.webp"}},
-		{"title":"wrong language","url":"https://test.com.br/serie/other","language":"pt-PT"},
-		{"title":"regional edition","url":"https://multi.example/pt-br/entry","language":"pt"},
-		{"title":"unknown language","url":"https://multi.example/other"},
-		{"title":"unknown region","url":"https://portuguese.example/title","language":"pt"},
-		{"title":"off site","url":"https://test.com.br.attacker.example/ch","language":"pt-br"},
-		{"title":"off protocol","url":"file:///test.com.br"},
-		{"title":"no cover","url":"https://test.com.br/test","thumbnail":{"src":"javascript:bad"}},
-		{"title":"site logo","url":"https://test.com.br/logo","thumbnail":{"src":"https://img.example/logo","logo":true}}
-		]}}`
+		if req.Method != "POST" || req.URL.String() != "https://api.tavily.com/search" || req.Header.Get("Authorization") != "Bearer test-only" || req.Header.Get("Content-Type") != "application/json" {
+			t.Fatal("invalid Tavily request")
+		}
+		if err := json.NewDecoder(req.Body).Decode(&payload); err != nil {
+			t.Fatal(err)
+		}
+		if !slices.Equal(payload.Domains, []string{"multi.example", "portuguese.example", "test.com.br"}) || payload.Query != "A & B" || payload.Country != "brazil" || payload.Language != "pt" || payload.Depth != "basic" || payload.Max != 20 || !payload.Filter || !payload.Images || !payload.Descriptions {
+			t.Fatalf("unexpected payload: %+v", payload)
+		}
+		body := `{"images":[{"url":"https://img.example/unrelated"}],"results":[
+   {"title":"A &amp; B","url":"https://www.test.com.br/serie/ab#top","images":[{"url":"javascript:bad"},{"url":"https://img.example/c.webp","description":"Cover"}]},
+   {"title":"wrong region","url":"https://test.com.br/pt-pt/other"},
+   {"title":"European edition","url":"https://test.com.br/title?lang=pt_PT"},
+   {"title":"Brazilian edition","url":"https://multi.example/edition?locale=pt_BR"},
+   {"title":"regional edition","url":"https://multi.example/pt-br/entry"},
+   {"title":"unknown region","url":"https://portuguese.example/title"},
+   {"title":"off site","url":"https://test.com.br.attacker.example/ch"},
+   {"title":"off protocol","url":"file:///test.com.br"},
+   {"title":"no cover","url":"https://test.com.br/test","favicon":"https://img.example/logo"}
+  ]}`
 		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(body)), Header: http.Header{}}, nil
 	})}
 	found, err := b.search(context.Background(), &client, "test-only", "A & B")
 	if err != nil || len(found) != 4 {
 		t.Fatalf("results=%+v, err=%v", found, err)
 	}
-	if found[0] != (SeriesMatch{Title: "A & B", URL: "https://www.test.com.br/serie/ab", Source: "test.com.br", Language: "pt-br", Thumbnail: "https://img.example/c.webp"}) || found[2].Thumbnail != "" || found[3].Thumbnail != "" {
+	if found[0] != (SeriesMatch{Title: "A & B", URL: "https://www.test.com.br/serie/ab", Source: "test.com.br", Language: "pt-br", Thumbnail: "https://img.example/c.webp"}) || found[1].Source != "multi.example" || found[1].Thumbnail != "" || found[2].Thumbnail != "" || found[3].Thumbnail != "" {
 		t.Fatalf("unexpected hits: %+v", found)
 	}
 }
@@ -55,11 +72,11 @@ func TestSearchSiteCoverage(t *testing.T) {
 	for _, lang := range []string{"en", "pt-br"} {
 		langs[lang] = map[string]bool{}
 		for _, b := range searchBatches(lang) {
-			if !strings.HasPrefix(b.rules, "$discard\n") || len(url.QueryEscape(b.rules)) > 4800 {
-				t.Fatal("invalid Goggle")
+			if len(b.hosts) == 0 || len(b.hosts) > 300 {
+				t.Fatal("invalid Tavily domain batch")
 			}
 			for host := range b.hosts {
-				if langs[lang][host] || !strings.Contains(b.rules, "\n$boost,site="+host) {
+				if langs[lang][host] {
 					t.Fatal(host)
 				}
 				langs[lang][host] = true
@@ -112,7 +129,7 @@ func TestSearchSiteCoverage(t *testing.T) {
 func TestSearchSeriesKeepsPartialResults(t *testing.T) {
 	projecthttp.SetRoundTripper(manGeekSearchTransport{t})
 	t.Cleanup(func() { projecthttp.SetRoundTripper(nil) })
-	t.Setenv("BRAVE_SEARCH_API_KEY", "test-only")
+	t.Setenv("TAVILY_API_KEY", "test-only")
 	old := searchClient
 	t.Cleanup(func() { searchClient = old })
 	requests := 0
@@ -121,10 +138,15 @@ func TestSearchSeriesKeepsPartialResults(t *testing.T) {
 		if requests == 2 {
 			return &http.Response{StatusCode: http.StatusTooManyRequests, Body: http.NoBody}, nil
 		}
-		rules := strings.Split(req.URL.Query().Get("goggles"), "\n")
-		host := strings.TrimPrefix(rules[1], "$boost,site=")
-		hit := fmt.Sprintf(`{"title":"Sol","url":"https://%s/series/sol","language":"en"}`, host)
-		body := `{"web":{"results":[` + hit + "," + hit + `]}}`
+		var payload struct {
+			Domains  []string `json:"include_domains"`
+			Language string
+		}
+		if err := json.NewDecoder(req.Body).Decode(&payload); err != nil || len(payload.Domains) == 0 || payload.Language != "en" {
+			t.Fatal("invalid English search")
+		}
+		hit := fmt.Sprintf(`{"title":"Sol","url":"https://%s/series/sol"}`, payload.Domains[0])
+		body := `{"results":[` + hit + "," + hit + `]}`
 		return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(strings.NewReader(body))}, nil
 	})}
 	found, err := SearchSeries("Café / Sol")
@@ -136,21 +158,31 @@ func TestSearchSeriesKeepsPartialResults(t *testing.T) {
 	}
 }
 
-func TestBraveKeyStorage(t *testing.T) {
+func TestTavilyKeyStorage(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", dir)
 	t.Setenv("HOME", dir)
 	t.Setenv("AppData", dir)
-	t.Setenv("BRAVE_SEARCH_API_KEY", "")
-	if err := SaveSearchKey(" test-only "); err != nil {
-		t.Fatal(err)
-	}
-	if got, err := braveKey(); got != "test-only" || err != nil {
-		t.Fatal("key was not saved")
-	}
+	t.Setenv("TAVILY_API_KEY", "")
 	path, err := searchKeyPath()
 	if err != nil {
 		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("BRAVE_SEARCH_API_KEY", "old-provider")
+	if err := os.WriteFile(filepath.Join(filepath.Dir(path), "brave-search-key"), []byte("old-provider"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if got, err := tavilyKey(); got != "" || err != nil {
+		t.Fatal("read old provider credentials")
+	}
+	if err := SaveSearchKey(" test-only "); err != nil {
+		t.Fatal(err)
+	}
+	if got, err := tavilyKey(); got != "test-only" || err != nil {
+		t.Fatal("key was not saved")
 	}
 	info, err := os.Stat(path)
 	if err != nil {
@@ -159,8 +191,8 @@ func TestBraveKeyStorage(t *testing.T) {
 	if runtime.GOOS != "windows" && info.Mode().Perm() != 0600 {
 		t.Fatal("unexpected permissions")
 	}
-	t.Setenv("BRAVE_SEARCH_API_KEY", "env-key")
-	if got, _ := braveKey(); got != "env-key" {
+	t.Setenv("TAVILY_API_KEY", "env-key")
+	if got, _ := tavilyKey(); got != "env-key" {
 		t.Fatal("environment precedence")
 	}
 	if err := SaveSearchKey(""); err != nil {

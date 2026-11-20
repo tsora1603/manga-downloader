@@ -25,7 +25,7 @@
     "madeBy": "Made with love by <author>{{author}}</author> · © {{years}} · <license>{{license}}</license>"
   },
   "search": {
-    "key": "Brave Search API key",
+    "key": "Tavily API key",
     "save": "Save key",
     "remove": "Remove saved key",
     "saved": "Key saved.",

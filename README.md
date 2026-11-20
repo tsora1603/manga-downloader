@@ -37,7 +37,7 @@ Linux, and as a **command line tool** for scripts, servers and Docker.
 - **[585 supported sites](#supported-sites)**, from big aggregators to small
   scanlation groups.
 - **Search by title** in the app or CLI. Search ManGeek directly, or add a
-  Brave Search API key to include English and Brazilian Portuguese pages from
+  Tavily API key to include English and Brazilian Portuguese pages from
   other supported sites. The app shows thumbnails when available.
 - In the app, **paste a URL and it loads**: the series, its chapters and the
   languages and scanlation groups it offers appear on their own.
