@@ -34,7 +34,7 @@ Linux, and as a **command line tool** for scripts, servers and Docker.
 
 ## Features
 
-- **[584 supported sites](#supported-sites)**, from big aggregators to small
+- **[585 supported sites](#supported-sites)**, from big aggregators to small
   scanlation groups.
 - In the app, **paste a URL and it loads**: the series, its chapters and the
   languages and scanlation groups it offers appear on their own.
@@ -328,7 +328,7 @@ environment variables.
 ## Supported sites
 
 <details>
-<summary><b>Show all 584 supported sites</b></summary>
+<summary><b>Show all 585 supported sites</b></summary>
 <br>
 
 | Site | Notes | Last verified |
@@ -666,6 +666,7 @@ environment variables.
 | [mangawow.org](https://mangawow.org) | MangaWOW, Turkish | 2026-11-02 |
 | [mangaxhentai.com](https://mangaxhentai.com) | Arabic, mostly NSFW | 2026-11-02 |
 | [mangazin.org](https://mangazin.org) | MANGA ZIN | 2026-11-02 |
+| [mangeek.app](https://mangeek.app) | ManGeek, Brazilian Portuguese. Use a series link (`/manga/{id}`). | — |
 | [mangtto.com](https://mangtto.com) | Mangitto | 2026-10-15 |
 | [manhuabug.com](https://www.manhuabug.com) | Thai | 2026-11-02 |
 | [manhuahot.com](https://manhuahot.com) | English | 2026-11-02 |

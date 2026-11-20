@@ -171,6 +171,7 @@ func (g *Grabber) IdentifySite() (Site, []error) {
 		NewBaozimh(g),
 		NewWeebCentral(g),
 		NewLeerCapitulo(g),
+		&ManGeek{Grabber: g},
 		NewMangak(g),
 		NewManganelo(g),
 		NewMgeko(g),

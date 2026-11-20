@@ -374,6 +374,7 @@ grabber: \
 	grabber/mangatimesquare \
 	grabber/mangatown \
 	grabber/mangaxhentai \
+	grabber/mangeek \
 	grabber/mangitto \
 	grabber/manhuahot \
 	grabber/manhuanext \
@@ -537,6 +538,13 @@ grabber/mangagg:
 
 grabber/manganato:
 	go run . https://www.manganato.gg/manga/apotheosis 2
+
+# The public catalogue supplies numeric series IDs.
+grabber/mangeek:
+	@series=$$(python3 scripts/mangeek-smoke-series.py) && \
+		listing=$$(go run . list --json "https://mangeek.app/manga/$$series") && \
+		chapter=$$(printf '%s' "$$listing" | python3 -c 'import json, sys; c = json.load(sys.stdin)["chapters"]; print(c[max(0, len(c)-2)]["number"])') && \
+		go run . "https://mangeek.app/manga/$$series" "$$chapter"
 
 # uses a real (headless) browser: the SPA signs every JSON API call with a
 # per-session, cloudflare-challenge-gated vrf token, so we render the pages,
