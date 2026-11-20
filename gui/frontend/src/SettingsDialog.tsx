@@ -5,15 +5,16 @@ import { useEffect, useRef, type MouseEvent } from 'react';
 import { errorMessage } from './format';
 import { LANG_INFO, LANGS, type Lang, type LangPref } from './i18n';
 import { T, useI18n } from './i18n/react';
-import { SelectField, Switch } from './fields';
+import { Segmented, SelectField, Switch } from './fields';
 import { KofiIcon, XIcon } from './icons';
 import { ISSUES_URL, KOFI_URL, LICENSE_URL, linkClick } from './links';
-import type { State } from './types';
+import type { State, ThemePref } from './types';
 
 interface Props {
   state: State;
   onClose: () => void;
   onCheckUpdates: (on: boolean) => void;
+  onTheme: (theme: ThemePref) => void;
   onSimpleStart: (on: boolean) => void;
   onOpenURL: (url: string) => void;
   onError: (msg: string) => void;
@@ -32,7 +33,7 @@ export function websiteURL(lang: Lang): string {
   return `https://mangadownloader.cat/${WEBSITE_PATHS[lang]}`;
 }
 
-export function SettingsDialog({ state, onClose, onCheckUpdates, onSimpleStart, onOpenURL, onError }: Props) {
+export function SettingsDialog({ state, onClose, onCheckUpdates, onTheme, onSimpleStart, onOpenURL, onError }: Props) {
   const { t, pref, systemLang, lang, setLanguage } = useI18n();
   const dialog = useRef<HTMLDialogElement>(null);
   const devBuild = state.releaseURL === '';
@@ -95,6 +96,19 @@ export function SettingsDialog({ state, onClose, onCheckUpdates, onSimpleStart, 
               value={pref}
               options={languageOptions}
               onChange={(value) => pick(value as LangPref)}
+            />
+          </section>
+
+          <section className="opt-group">
+            <Segmented<ThemePref>
+              label={t('settings.theme.heading')}
+              value={state.prefs.theme ?? ''}
+              options={[
+                { value: '', label: t('settings.theme.system') },
+                { value: 'light', label: t('settings.theme.light') },
+                { value: 'dark', label: t('settings.theme.dark') },
+              ]}
+              onChange={onTheme}
             />
           </section>
 

@@ -305,6 +305,9 @@ export function App({ api, initial }: { api: Api; initial?: State }) {
           onCheckUpdates={(on) => {
             api.setCheckUpdates(on).catch((e: unknown) => setOptionError(errorMessage(e, t)));
           }}
+          onTheme={(theme) => {
+            api.setTheme(theme).catch((e: unknown) => setOptionError(errorMessage(e, t)));
+          }}
           onSimpleStart={(on) => {
             api.setSimpleStart(on).catch((e: unknown) => setOptionError(errorMessage(e, t)));
           }}

@@ -45,6 +45,8 @@ export function SetSimpleStart(arg1:boolean):Promise<void>;
 
 export function SetSystemLocale(arg1:string):Promise<void>;
 
+export function SetTheme(arg1:string):Promise<void>;
+
 export function SetUILanguage(arg1:string):Promise<void>;
 
 export function SetVolumes(arg1:string):Promise<void>;

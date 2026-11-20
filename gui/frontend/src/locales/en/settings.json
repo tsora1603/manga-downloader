@@ -6,6 +6,12 @@
     "heading": "Language",
     "systemOption": "System ({{language}})"
   },
+  "theme": {
+    "heading": "Appearance",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "start": {
     "heading": "Start screen",
     "simple": "Open with the simple view",

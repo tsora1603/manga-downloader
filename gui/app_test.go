@@ -39,7 +39,8 @@ func (f *fakeSink) Emit(event string, data any) {
 	f.events = append(f.events, fakeEvent{event, data})
 }
 
-func (f *fakeSink) Close() {}
+func (f *fakeSink) SetTheme(string) {}
+func (f *fakeSink) Close()          {}
 
 func (f *fakeSink) ChooseDirectory(title, defaultDir string) (string, error) {
 	f.mu.Lock()
@@ -408,6 +409,24 @@ func TestPrefSettersWorkWhileBusy(t *testing.T) {
 	}
 	if got := loadPrefs(prefs); got != (PrefsDTO{UILanguage: "es", SimpleStart: true}) {
 		t.Errorf("saved prefs %+v", got)
+	}
+}
+
+func TestSetThemeUpdatesAndPersistsAppearance(t *testing.T) {
+	a, _, path := newTestApp(t, 1)
+	for _, theme := range []string{"dark", "light", ""} {
+		if err := a.SetTheme(theme); err != nil {
+			t.Fatal(err)
+		}
+		if got := a.State().Prefs.Theme; got != theme {
+			t.Fatalf("window theme = %q, want %q", got, theme)
+		}
+		if got := loadPrefs(path).Theme; got != theme {
+			t.Fatalf("saved theme = %q, want %q", got, theme)
+		}
+	}
+	if err := a.SetTheme("unknown"); err == nil {
+		t.Fatal("accepted unknown theme")
 	}
 }
 

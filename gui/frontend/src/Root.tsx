@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Api, Unsubscribe } from './api';
 import { App } from './App';
+import { ThemeProvider } from './theme';
 import type { LangPref } from './i18n';
 import { I18nProvider } from './i18n/react';
 import type { State } from './types';
@@ -65,7 +66,9 @@ export function Root({ api }: { api: Api }) {
   if (latest === undefined) return null;
   return (
     <I18nProvider pref={latest ? prefOf(latest) : ''} persist={persist}>
-      <App api={api} initial={latest ?? undefined} />
+      <ThemeProvider pref={latest?.prefs.theme ?? ''}>
+        <App api={api} initial={latest ?? undefined} />
+      </ThemeProvider>
     </I18nProvider>
   );
 }

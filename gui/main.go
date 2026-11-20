@@ -59,11 +59,12 @@ func main() {
 		Height:           760,
 		MinWidth:         900,
 		MinHeight:        600,
-		BackgroundColour: startupBackground(),
+		BackgroundColour: startupBackground(ctrl.Prefs().Theme),
 		AssetServer:      &assetserver.Options{Assets: assets},
 		OnStartup: func(ctx context.Context) {
 			app.startup(ctx, rt)
 		},
+		OnDomReady:     func(context.Context) { rt.SetTheme(ctrl.Prefs().Theme) },
 		OnShutdown:     app.shutdown,
 		ErrorFormatter: func(err error) any { return windowError(err) },
 		Bind:           []interface{}{app},

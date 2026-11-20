@@ -5,7 +5,7 @@
 import * as app from '../wailsjs/go/main/App';
 import { BrowserOpenURL, ClipboardGetText, EventsOn } from '../wailsjs/runtime/runtime';
 import type { LangPref } from './i18n';
-import type { Chapter, LogLine, Options, SeriesMatch, State } from './types';
+import type { Chapter, LogLine, Options, SeriesMatch, State, ThemePref } from './types';
 
 export type Unsubscribe = () => void;
 
@@ -55,6 +55,7 @@ export interface Api {
   setSystemLocale(locale: string): Promise<void>;
   setCheckUpdates(on: boolean): Promise<void>;
   /** Saves whether the window shows the simple view while nothing is loaded; a load started keeps the full one */
+  setTheme(theme: ThemePref): Promise<void>;
   setSimpleStart(on: boolean): Promise<void>;
 
   // Pushes. Each returns a function that stops the callback.
@@ -127,6 +128,7 @@ export function createWailsApi(): Api {
     setUILanguage: (pref) => app.SetUILanguage(pref),
     setSystemLocale: (locale) => app.SetSystemLocale(locale),
     setCheckUpdates: (on) => app.SetCheckUpdates(on),
+    setTheme: (theme) => app.SetTheme(theme),
     setSimpleStart: (on) => app.SetSimpleStart(on),
 
     onState: (cb) => state.subscribe(cb),

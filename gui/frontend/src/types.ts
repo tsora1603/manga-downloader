@@ -160,7 +160,10 @@ export interface State {
 }
 
 /** App-only preferences: what the CLI has no flag for, so they aren't Options */
+export type ThemePref = '' | 'light' | 'dark';
+
 export interface Prefs {
+  theme?: ThemePref;
   /** The window's language; '' follows the system. Go omits it when empty, so it can be absent */
   uiLanguage?: LangPref;
   /** Check GitHub for a newer release at startup */

@@ -47,7 +47,7 @@ func TestOptionsSaveAndLoadRoundTrip(t *testing.T) {
 
 func TestPrefsSaveAndLoadRoundTrip(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "gui.json")
-	want := PrefsDTO{UILanguage: "ca", CheckUpdates: false, SimpleStart: false}
+	want := PrefsDTO{Theme: "dark", UILanguage: "ca", CheckUpdates: false, SimpleStart: false}
 	if err := saveOptions(path, OptionsDTO{Format: "raw"}, want); err != nil {
 		t.Fatal(err)
 	}

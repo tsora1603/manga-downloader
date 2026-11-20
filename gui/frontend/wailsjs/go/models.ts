@@ -241,6 +241,7 @@ export namespace main {
 	    }
 	}
 	export class PrefsDTO {
+	    theme?: string;
 	    uiLanguage?: string;
 	    checkUpdates: boolean;
 	    simpleStart: boolean;
@@ -251,6 +252,7 @@ export namespace main {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.theme = source["theme"];
 	        this.uiLanguage = source["uiLanguage"];
 	        this.checkUpdates = source["checkUpdates"];
 	        this.simpleStart = source["simpleStart"];

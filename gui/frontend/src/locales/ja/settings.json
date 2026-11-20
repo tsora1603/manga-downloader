@@ -6,6 +6,12 @@
     "heading": "言語",
     "systemOption": "システム（{{language}}）"
   },
+  "theme": {
+    "heading": "外観",
+    "system": "システム",
+    "light": "ライト",
+    "dark": "ダーク"
+  },
   "start": {
     "heading": "起動時の画面",
     "simple": "シンプル表示で起動",

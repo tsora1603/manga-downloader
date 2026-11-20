@@ -439,7 +439,8 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
   const offers = offersFor(site, uiLang);
   const options = defaultOptions(shot, epub);
   // the app preferences, kept as the backend keeps them in gui.json
-  const prefs: Prefs = { uiLanguage, checkUpdates: true, simpleStart };
+  const prefs: Prefs = { checkUpdates: true, simpleStart };
+  if (uiLanguage) prefs.uiLanguage = uiLanguage;
   let url = '';
   let loading = false;
   let loadError: Message | undefined;
@@ -578,10 +579,7 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
     filenameTemplateWarning:
       options.packAs === 'chapters' || options.packAs === 'parts' ? templateWarning(options.filenameTemplate) : '',
     // the wire omits uiLanguage when it follows the system, as gui.json does
-    prefs:
-      prefs.uiLanguage === ''
-        ? { checkUpdates: prefs.checkUpdates, simpleStart: prefs.simpleStart }
-        : { ...prefs },
+    prefs: { ...prefs },
   });
   const push = () => stateBus.emit(snapshot());
 
@@ -1314,13 +1312,19 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
     },
     // like the backend's, never refused while a load or run is going on
     async setUILanguage(pref) {
-      prefs.uiLanguage = pref;
+      if (pref) prefs.uiLanguage = pref;
+      else delete prefs.uiLanguage;
       push();
     },
     // the backend's update check takes the system's locale; the mock makes no check
     async setSystemLocale() {},
     async setCheckUpdates(on) {
       prefs.checkUpdates = on;
+      push();
+    },
+    async setTheme(theme) {
+      if (theme) prefs.theme = theme;
+      else delete prefs.theme;
       push();
     },
     async setSimpleStart(on) {

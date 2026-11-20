@@ -9,7 +9,7 @@
  */
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   --font:
     'Inter Variable', 'Murecho Variable', 'Hiragino Sans', 'Yu Gothic UI', Meiryo, 'Noto Sans CJK JP', system-ui,
@@ -69,41 +69,45 @@
   text-rendering: optimizeLegibility;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #121214;
-    --surface: #1b1b1e;
-    --surface-2: #1f1f23;
-    --sunken: #161618;
-    --hover: #242428;
-    --raised: #34343b;
-    --border: #2b2b30;
-    --border-strong: #3b3b42;
-    --text: #ececef;
-    --text-2: #b4b4bc;
-    --text-3: #8e8e98;
-    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23b4b4bc' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+/* The native window supplies the saved background until preferences arrive. */
+:root:not([data-theme]) {
+  background: transparent;
+}
 
-    --accent: #a993ff;
-    --accent-hover: #bba9ff;
-    --accent-soft: rgb(169 147 255 / 15%);
-    --accent-softer: rgb(169 147 255 / 7%);
-    --accent-text: #bcaaff;
-    --on-accent: #16132a;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121214;
+  --surface: #1b1b1e;
+  --surface-2: #1f1f23;
+  --sunken: #161618;
+  --hover: #242428;
+  --raised: #34343b;
+  --border: #2b2b30;
+  --border-strong: #3b3b42;
+  --text: #ececef;
+  --text-2: #b4b4bc;
+  --text-3: #8e8e98;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23b4b4bc' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 
-    --success: #5ee0b8;
-    --success-solid: #5ee0b8;
-    --success-soft: rgb(94 224 184 / 13%);
-    --warning: #e9b25a;
-    --warning-solid: #e0a548;
-    --warning-soft: rgb(233 178 90 / 13%);
-    --danger: #ff8296;
-    --danger-soft: rgb(255 130 150 / 13%);
+  --accent: #a993ff;
+  --accent-hover: #bba9ff;
+  --accent-soft: rgb(169 147 255 / 15%);
+  --accent-softer: rgb(169 147 255 / 7%);
+  --accent-text: #bcaaff;
+  --on-accent: #16132a;
 
-    --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
-    --shadow-md: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 12px rgb(0 0 0 / 25%);
-    --shadow-lg: 0 2px 6px rgb(0 0 0 / 35%), 0 16px 40px rgb(0 0 0 / 45%);
-  }
+  --success: #5ee0b8;
+  --success-solid: #5ee0b8;
+  --success-soft: rgb(94 224 184 / 13%);
+  --warning: #e9b25a;
+  --warning-solid: #e0a548;
+  --warning-soft: rgb(233 178 90 / 13%);
+  --danger: #ff8296;
+  --danger-soft: rgb(255 130 150 / 13%);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 12px rgb(0 0 0 / 25%);
+  --shadow-lg: 0 2px 6px rgb(0 0 0 / 35%), 0 16px 40px rgb(0 0 0 / 45%);
 }
 
 *,

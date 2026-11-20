@@ -12,12 +12,14 @@ var (
 	darkBackground  = options.RGBA{R: 0x12, G: 0x12, B: 0x14, A: 0xff}
 )
 
-// startupBackground is the window's background for the system's theme as it
-// is when the app starts. Wails sets the background once, so a theme changed
-// while the app runs isn't followed by it (the page follows it).
-func startupBackground() *options.RGBA {
+func validTheme(theme string) bool {
+	return theme == "" || theme == "light" || theme == "dark"
+}
+
+// startupBackground matches the saved appearance before the webview paints.
+func startupBackground(theme string) *options.RGBA {
 	bg := lightBackground
-	if systemPrefersDark() {
+	if theme == "dark" || (theme == "" && systemPrefersDark()) {
 		bg = darkBackground
 	}
 

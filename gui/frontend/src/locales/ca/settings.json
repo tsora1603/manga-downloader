@@ -6,6 +6,12 @@
     "heading": "Idioma",
     "systemOption": "Sistema ({{language}})"
   },
+  "theme": {
+    "heading": "Aparença",
+    "system": "Sistema",
+    "light": "Clar",
+    "dark": "Fosc"
+  },
   "start": {
     "heading": "Pantalla d'inici",
     "simple": "Obre amb la vista senzilla",

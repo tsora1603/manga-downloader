@@ -32,6 +32,7 @@ function render(pref: LangPref, s: State, systemLanguages = ['fr-FR']) {
         state: s,
         onClose: () => undefined,
         onCheckUpdates: () => undefined,
+        onTheme: () => {},
         onSimpleStart: () => undefined,
         onOpenURL: () => undefined,
         onError: () => undefined,

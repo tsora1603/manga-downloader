@@ -136,7 +136,9 @@ started with one set, as on the [command line](cli.md#environment-variables).
 The gear icon (below the URL box on the start screen, in the header of the full
 app) or Ctrl+, / ⌘, opens Settings: the app's language (English, Español,
 Català or 日本語), whether it opens with the simple start screen, and whether it
-checks for new versions at startup.
+checks for new versions at startup. In **Appearance**, choose **Light**, **Dark**,
+or **System** to follow your desktop. The choice applies immediately and is
+remembered the next time you open the app.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../assets/screenshots/13-settings-dark.webp">

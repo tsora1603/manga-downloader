@@ -13,7 +13,7 @@ import (
 )
 
 // TestBackgroundsMatchTheStylesheet reads the page's --bg from styles.css (the
-// light one from :root, the dark one from the prefers-color-scheme block), so
+// light one from :root, the dark one from the dark theme block), so
 // the window's startup colours can't drift from the page's.
 func TestBackgroundsMatchTheStylesheet(t *testing.T) {
 	raw, err := os.ReadFile("frontend/src/styles.css")
@@ -21,7 +21,7 @@ func TestBackgroundsMatchTheStylesheet(t *testing.T) {
 		t.Fatal(err)
 	}
 	css := string(raw)
-	dark := strings.Index(css, "@media (prefers-color-scheme: dark)")
+	dark := strings.Index(css, `:root[data-theme="dark"]`)
 	if dark < 0 {
 		t.Fatal("styles.css has no dark scheme block")
 	}
@@ -40,4 +40,10 @@ func TestBackgroundsMatchTheStylesheet(t *testing.T) {
 	}
 	check("light", lightBackground, light)
 	check("dark", darkBackground, darkBG)
+}
+
+func TestStartupBackgroundHonoursTheme(t *testing.T) {
+	if *startupBackground("dark") != darkBackground || *startupBackground("light") != lightBackground {
+		t.Fatal("window background did not match the saved appearance")
+	}
 }

@@ -33,6 +33,7 @@ const logTail = 500
 // sink is what the App needs from the Wails runtime. The real one is
 // wailsRuntime; tests use a fake that records calls.
 type sink interface {
+	SetTheme(theme string)
 	// Emit sends an event to the frontend. It must not block for long.
 	Emit(event string, data any)
 	// ChooseDirectory shows the native folder picker titled title, "" when cancelled
@@ -603,6 +604,17 @@ func (a *App) SetUILanguage(lang string) error {
 	return nil
 }
 
+// SetTheme applies the window appearance and saves it for the next launch.
+func (a *App) SetTheme(theme string) error {
+	if !validTheme(theme) {
+		return fmt.Errorf("unknown theme %q", theme)
+	}
+	a.ctrl.SetPrefs(func(p *PrefsDTO) { p.Theme = theme })
+	a.sink.SetTheme(theme)
+	a.save()
+	return nil
+}
+
 // SetSimpleStart sets whether the window shows the simple view while nothing is
 // loaded. It's never refused while busy; a load started keeps the full view.
 func (a *App) SetSimpleStart(on bool) error {
@@ -829,6 +841,22 @@ func (r *wailsRuntime) context() context.Context {
 func (r *wailsRuntime) Emit(event string, data any) {
 	if ctx := r.context(); ctx != nil {
 		wruntime.EventsEmit(ctx, event, data)
+	}
+}
+
+// SetTheme updates the native frame on platforms where Wails supports it.
+func (r *wailsRuntime) SetTheme(theme string) {
+	ctx := r.context()
+	if ctx == nil {
+		return
+	}
+	switch theme {
+	case "dark":
+		wruntime.WindowSetDarkTheme(ctx)
+	case "light":
+		wruntime.WindowSetLightTheme(ctx)
+	default:
+		wruntime.WindowSetSystemDefaultTheme(ctx)
 	}
 }
 

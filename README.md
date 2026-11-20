@@ -56,8 +56,8 @@ Linux, and as a **command line tool** for scripts, servers and Docker.
 - **Concurrent downloads** with retries.
 - **Command line**: a single binary with no runtime, no dependencies and no
   config file, plus Docker images.
-- **Desktop app**: native folder picker, and a window that follows your system's
-  light or dark theme.
+- **Desktop app**: native folder picker, and light and dark themes, with the option
+  to follow your system.
 
 ## Installation
 
