@@ -666,7 +666,7 @@ environment variables.
 | [mangawow.org](https://mangawow.org) | MangaWOW, Turkish | 2026-11-02 |
 | [mangaxhentai.com](https://mangaxhentai.com) | Arabic, mostly NSFW | 2026-11-02 |
 | [mangazin.org](https://mangazin.org) | MANGA ZIN | 2026-11-02 |
-| [mangeek.app](https://mangeek.app) | ManGeek, Brazilian Portuguese. Use a series link (`/manga/{id}`). | — |
+| [mangeek.app](https://mangeek.app) | ManGeek, Brazilian Portuguese. Search by title in the app or with `manga-downloader search`. | — |
 | [mangtto.com](https://mangtto.com) | Mangitto | 2026-10-15 |
 | [manhuabug.com](https://www.manhuabug.com) | Thai | 2026-11-02 |
 | [manhuahot.com](https://manhuahot.com) | English | 2026-11-02 |

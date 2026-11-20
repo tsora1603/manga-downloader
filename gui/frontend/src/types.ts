@@ -217,3 +217,8 @@ export interface LogLine {
   /** The line as a translatable message, when the Go side sent one (see say() in i18n) */
   msg?: Message;
 }
+
+export interface SeriesMatch {
+  title: string;
+  url: string;
+}

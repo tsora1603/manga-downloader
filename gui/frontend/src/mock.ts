@@ -1113,6 +1113,11 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
     async log() {
       return log.slice();
     },
+    async searchManGeek(query) {
+      return [{ title: 'One Piece', url: 'https://mangeek.app/manga/42' }]
+        .filter((series) => series.title.toLowerCase().includes(query.trim().toLowerCase()));
+    },
+
     async clearLog() {
       log = [];
       logBus.emit(log);

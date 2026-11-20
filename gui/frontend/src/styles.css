@@ -2549,3 +2549,21 @@ a.version:hover {
   font-size: 11px;
   color: var(--text-3);
 }
+
+.mangeek-results {
+  display: grid;
+  gap: 4px;
+  max-height: 25vh;
+  overflow-y: auto;
+}
+
+.source.simple .mangeek-results {
+  width: min(640px, 100%);
+  justify-self: center;
+}
+
+.mangeek-results button {
+  justify-content: flex-start;
+  text-align: start;
+  white-space: normal;
+}

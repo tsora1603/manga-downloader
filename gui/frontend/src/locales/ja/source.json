@@ -1,7 +1,7 @@
 {
   "url": {
-    "label": "作品のURL",
-    "placeholder": "作品または話のリンクを貼り付けてください",
+    "label": "シリーズのURLまたはManGeekの作品名",
+    "placeholder": "シリーズ・話のリンクを貼り付けるか、ManGeekの作品名を入力",
     "clear": "クリア",
     "clearLabel": "URLをクリア",
     "paste": "貼り付け",
@@ -22,5 +22,10 @@
     "notApplied": "まだ適用されていません",
     "appliesAtOnce": "選ぶとすぐに適用されます",
     "appliesOnLoad": "作品の読み込み時に適用されます"
+  },
+  "search": {
+    "action": "ManGeekで検索",
+    "results": "ManGeekの検索結果",
+    "empty": "該当する作品は見つかりませんでした。"
   }
 }

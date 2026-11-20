@@ -99,3 +99,32 @@ func TestManGeekReaderLink(t *testing.T) {
 		}
 	}
 }
+
+type manGeekSearchTransport struct{ t *testing.T }
+
+func (rt manGeekSearchTransport) RoundTrip(req *nethttp.Request) (*nethttp.Response, error) {
+	rt.t.Helper()
+	parts := strings.Split(req.URL.EscapedPath(), "/")
+	if req.Method != "POST" || len(parts) != 8 || parts[4] != "search" ||
+		parts[6] != "caf%C3%A9%20%2F%20sol" || parts[7] != "ed2d5199693c50afde0178a1b20f6cf5" {
+		rt.t.Fatalf("unexpected request: %s %s", req.Method, req.URL)
+	}
+	body, err := io.ReadAll(req.Body)
+	if err != nil || string(body) != `{"tags":[]}` || req.Header.Get("Content-Type") != "application/json" {
+		rt.t.Fatalf("search payload: %q, %v", body, err)
+	}
+	const result = `[{"id":7,"title":"Café"},{"id":7,"title":"Duplicate"},{"id":8,"title":"Sol"},{"title":"No ID"}]`
+	return &nethttp.Response{StatusCode: 200, Header: nethttp.Header{}, Body: io.NopCloser(strings.NewReader(result)), Request: req}, nil
+}
+
+func TestSearchManGeek(t *testing.T) {
+	http.SetRoundTripper(manGeekSearchTransport{t})
+	t.Cleanup(func() { http.SetRoundTripper(nil) })
+	if _, err := SearchManGeek("  "); err == nil {
+		t.Fatal("empty query accepted")
+	}
+	matches, err := SearchManGeek("  CAFÉ / Sol  ")
+	if err != nil || len(matches) != 2 || matches[0] != (ManGeekResult{"Café", "https://mangeek.app/manga/7"}) || matches[1].Title != "Sol" {
+		t.Fatalf("search results: %+v, %v", matches, err)
+	}
+}

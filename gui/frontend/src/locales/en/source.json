@@ -1,7 +1,7 @@
 {
   "url": {
-    "label": "Series URL",
-    "placeholder": "Paste the link to a series or one of its chapters",
+    "label": "Series URL or ManGeek title",
+    "placeholder": "Paste a series or chapter link, or type a ManGeek title",
     "clear": "Clear",
     "clearLabel": "Clear the URL",
     "paste": "Paste",
@@ -22,5 +22,10 @@
     "notApplied": "Not applied yet",
     "appliesAtOnce": "Picking one applies it at once",
     "appliesOnLoad": "Applied when the series loads"
+  },
+  "search": {
+    "action": "Search ManGeek",
+    "results": "ManGeek search results",
+    "empty": "No matching titles on ManGeek."
   }
 }

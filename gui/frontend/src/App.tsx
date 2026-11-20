@@ -195,6 +195,7 @@ export function App({ api, initial }: { api: Api; initial?: State }) {
       <SourceBar
         state={state}
         onLoad={load}
+        searchManGeek={api.searchManGeek}
         readClipboard={() => api.readClipboard()}
         onClear={clear}
         onOptions={setOptions}

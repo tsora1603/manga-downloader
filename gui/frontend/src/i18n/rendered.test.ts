@@ -120,6 +120,7 @@ function components({ state, chapters, selected, log }: Snapshot): Screen[] {
       element: createElement(SourceBar, {
         state,
         onLoad: noop,
+        searchManGeek: async () => [],
         readClipboard: () => Promise.resolve(''),
         onClear: noop,
         onOptions: later,

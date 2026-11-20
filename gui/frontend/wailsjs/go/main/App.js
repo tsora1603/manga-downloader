@@ -42,6 +42,10 @@ export function Options() {
   return window['go']['main']['App']['Options']();
 }
 
+export function SearchManGeek(arg1) {
+  return window['go']['main']['App']['SearchManGeek'](arg1);
+}
+
 export function SelectRange(arg1) {
   return window['go']['main']['App']['SelectRange'](arg1);
 }

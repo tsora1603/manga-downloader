@@ -5,7 +5,7 @@
 import * as app from '../wailsjs/go/main/App';
 import { BrowserOpenURL, ClipboardGetText, EventsOn } from '../wailsjs/runtime/runtime';
 import type { LangPref } from './i18n';
-import type { Chapter, LogLine, Options, State } from './types';
+import type { Chapter, LogLine, Options, SeriesMatch, State } from './types';
 
 export type Unsubscribe = () => void;
 
@@ -19,6 +19,7 @@ export interface Api {
   // Actions. A rejected promise carries the reason as a string (or Error).
   /** Empties the log the window shows; a running download goes on logging after it */
   clearLog(): Promise<void>;
+  searchManGeek(title: string): Promise<SeriesMatch[]>;
   load(url: string): Promise<void>;
   /** Forgets the loaded series (URL, chapters, selection, load error); refused while one loads or a download runs */
   clear(): Promise<void>;
@@ -102,6 +103,7 @@ export function createWailsApi(): Api {
     log: () => app.Log() as unknown as Promise<LogLine[]>,
 
     clearLog: () => app.ClearLog(),
+    searchManGeek: (title) => app.SearchManGeek(title),
     load: (url) => app.Load(url),
     clear: () => app.Clear(),
     setSelected: (index, on) => app.SetSelected(index, on),

@@ -4,6 +4,11 @@ Every flag and behaviour of `manga-downloader`, with the [table of all
 flags](#options) at the end. For installing it see the
 [README](../README.md#installing-the-command-line-tool).
 
+## Search ManGeek
+
+Run `manga-downloader search "One Piece"` to find series by title in the Portuguese catalogue.
+Each matching title is followed by its series URL. Use that URL with `list` or the download command.
+
 ## Usage
 
 ~~~bash

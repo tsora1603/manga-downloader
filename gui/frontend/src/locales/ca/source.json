@@ -1,7 +1,7 @@
 {
   "url": {
-    "label": "URL de la sèrie",
-    "placeholder": "Enganxa l'enllaç d'una sèrie o d'un dels seus capítols",
+    "label": "URL de la sèrie o títol de ManGeek",
+    "placeholder": "Enganxa un enllaç de sèrie o capítol, o escriu un títol de ManGeek",
     "clear": "Esborra",
     "clearLabel": "Esborra l'URL",
     "paste": "Enganxa",
@@ -22,5 +22,10 @@
     "notApplied": "Encara no aplicat",
     "appliesAtOnce": "En triar-ne un, s'aplica a l'instant",
     "appliesOnLoad": "S'aplica en carregar la sèrie"
+  },
+  "search": {
+    "action": "Cerca a ManGeek",
+    "results": "Resultats de ManGeek",
+    "empty": "No s’han trobat títols a ManGeek."
   }
 }

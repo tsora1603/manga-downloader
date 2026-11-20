@@ -12,6 +12,8 @@ The app opens on a simple start screen: the logo, the URL box with its *Paste*
 button, *Load* and *Settings*. (To open on the full window instead, turn off
 *Open with the simple view* under *Settings* → *Start screen*.) From there:
 
+For ManGeek, type the manga title in the URL box and press Enter or click **Search ManGeek**. Select a result to load its chapters.
+
 1. **Paste the series' URL** into the box (or use its *Paste* button). The
    series loads on its own once you paste or stop typing; *Load* or Enter
    loads it at once. The window then turns into the full app, with the URL box

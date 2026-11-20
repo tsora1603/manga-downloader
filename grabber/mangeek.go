@@ -41,12 +41,54 @@ func (m *ManGeek) Test() (bool, error) {
 
 func (m *ManGeek) WaitPage() { manGeekPacer.wait() }
 
-func manGeekRequest(route, id string, target any) error {
+// ManGeekResult is a series that can be opened directly in the downloader.
+type ManGeekResult struct {
+	Title string `json:"title"`
+	URL   string `json:"url"`
+}
+
+// SearchManGeek queries the Portuguese catalogue by title.
+func SearchManGeek(query string) ([]ManGeekResult, error) {
+	query = strings.ToLower(strings.TrimSpace(query))
+	if query == "" {
+		return nil, fmt.Errorf("enter a manga title")
+	}
+	var rows []struct {
+		ID    int64
+		Title string
+	}
+	if err := manGeekRequest("search", query, &rows); err != nil {
+		return nil, fmt.Errorf("ManGeek search: %w", err)
+	}
+	results := make([]ManGeekResult, 0, len(rows))
+	seen := make(map[int64]bool)
+	for _, row := range rows {
+		title := sanitizeTitle(row.Title)
+		if row.ID <= 0 || title == "" || seen[row.ID] {
+			continue
+		}
+		seen[row.ID] = true
+		results = append(results, ManGeekResult{Title: title, URL: fmt.Sprintf("https://mangeek.app/manga/%d", row.ID)})
+	}
+	return results, nil
+}
+
+func manGeekRequest(route, input string, target any) error {
 	manGeekPacer.wait()
 	nonce := strings.ToUpper(strconv.FormatInt(time.Now().UnixMilli(), 16))
-	key := md5.Sum([]byte("M<" + id + "#MANG33K>D"))
-	endpoint := fmt.Sprintf("http://geekstations.com.br/api/v2/pt/%s/%s/%s/%x", route, nonce, id, key)
-	body, err := http.Get(http.RequestParams{URL: endpoint, Accept: "application/json", Headers: map[string]string{"X-Requested-With": "XMLHttpRequest"}})
+	key := md5.Sum([]byte("M<" + input + "#MANG33K>D"))
+	params := http.RequestParams{
+		URL:     fmt.Sprintf("http://geekstations.com.br/api/v2/pt/%s/%s/%s/%x", route, nonce, url.PathEscape(input), key),
+		Accept:  "application/json",
+		Headers: map[string]string{"X-Requested-With": "XMLHttpRequest"},
+	}
+	request := http.Get
+	if route == "search" {
+		request = http.Post
+		params.Headers["Content-Type"] = "application/json"
+		params.Body = `{"tags":[]}`
+	}
+	body, err := request(params)
 	if err != nil {
 		return err
 	}

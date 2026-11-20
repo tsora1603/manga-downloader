@@ -485,6 +485,11 @@ func (a *App) Clear() error {
 	return nil
 }
 
+// SearchManGeek returns series links for the source bar's title search.
+func (a *App) SearchManGeek(title string) ([]grabber.ManGeekResult, error) {
+	return grabber.SearchManGeek(title)
+}
+
 // Load identifies the site for url and fetches its title and chapters. It
 // returns once loading has started; the outcome arrives in the state (loading,
 // loadError) and the "chapters" event.

@@ -6,12 +6,13 @@ import { useEffect, useRef, useState, type Ref } from 'react';
 import { AUTO_LOAD_DELAY_MS, shouldAutoLoad } from './autoLoad';
 import { SelectField, TextField } from './fields';
 import { sameScanlator, typedValue, filterControl, filtersIdentified, filterOptions, shownSelection, type FilterControl, type FilterKind } from './filters';
+import { errorMessage } from './format';
 import { say } from './i18n';
 import { useI18n } from './i18n/react';
 import { shortcutLabel, isMac } from './settingsShortcut';
 import { AlertIcon, GearIcon, LinkIcon, RefreshIcon, Spinner } from './icons';
 import { Mascot, useExpression, Wordmark } from './Mascot';
-import type { FilterChoice, Options, State } from './types';
+import type { FilterChoice, Options, SeriesMatch, State } from './types';
 
 /** What the clipboard's text means for the URL box: trimmed, or '' when there is nothing to paste */
 export function pasteValue(clipboard: string): string {
@@ -21,6 +22,7 @@ export function pasteValue(clipboard: string): string {
 interface Props {
   state: State;
   onLoad: (url: string) => void;
+  searchManGeek: (title: string) => Promise<SeriesMatch[]>;
   /** The clipboard's text, read by the Paste button */
   readClipboard: () => Promise<string>;
   /** The URL box's clear button: empties the field and forgets the loaded series */
@@ -45,6 +47,7 @@ interface Props {
 export function SourceBar({
   state,
   onLoad,
+  searchManGeek,
   readClipboard,
   onClear,
   onOptions,
@@ -62,6 +65,30 @@ export function SourceBar({
   const [typed, setTyped] = useState<string | null>(null);
   const url = typed ?? state.url;
   const busy = state.loading || state.running;
+  const [matches, setMatches] = useState<SeriesMatch[] | null>(null);
+  const [searchError, setSearchError] = useState('');
+  const [searching, setSearching] = useState(false);
+  const searchID = useRef(0);
+  const byTitle = url.trim() !== '' && !/^https?:/i.test(url.trim());
+  function resetSearch() {
+    searchID.current++;
+    setSearching(false);
+    setMatches(null);
+    setSearchError('');
+  }
+  async function search() {
+    resetSearch();
+    const id = searchID.current;
+    setSearching(true);
+    try {
+      const results = await searchManGeek(url.trim());
+      if (id === searchID.current) setMatches(results);
+    } catch (e) {
+      if (id === searchID.current) setSearchError(errorMessage(e, t));
+    } finally {
+      if (id === searchID.current) setSearching(false);
+    }
+  }
   const expression = useExpression(state);
   const same = state.loaded && url.trim() === state.url;
   // a pasted or typed series URL loads once the typing pauses; the timer reads
@@ -76,6 +103,7 @@ export function SourceBar({
   // (see onPaste and shouldAutoLoad)
   const pasting = useRef(false);
   const changeUrl = (value: string, pasted = false) => {
+    resetSearch();
     setTyped(value);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
@@ -130,7 +158,8 @@ export function SourceBar({
             e.preventDefault();
             // Enter loads now, so the pending automatic load must not fire too
             clearTimeout(timer.current);
-            onLoad(url);
+            if (byTitle) void search();
+            else onLoad(url);
           }}
         >
           <div className={`url-box${problem !== '' ? ' invalid' : ''}`}>
@@ -139,7 +168,7 @@ export function SourceBar({
               ref={input}
               // the simple view is only the URL box, so it starts in it
               autoFocus={simple}
-              type="url"
+              type={byTitle ? "text" : "url"}
               className="url-input"
               aria-label={t('source.url.label')}
               placeholder={t('source.url.placeholder')}
@@ -171,6 +200,7 @@ export function SourceBar({
                 onClick={() => {
                   // the pending automatic load must not fire on the emptied field
                   clearTimeout(timer.current);
+                  resetSearch();
                   setTyped('');
                   onClear();
                 }}
@@ -193,9 +223,9 @@ export function SourceBar({
           <button
             type="submit"
             className={`btn load-btn${same ? '' : ' primary'}`}
-            disabled={busy || url.trim() === ''}
+            disabled={busy || searching || url.trim() === ''}
           >
-            {state.loading ? (
+            {state.loading || searching ? (
               <>
                 <Spinner /> {t('source.load.loading')}
               </>
@@ -204,7 +234,7 @@ export function SourceBar({
                 <RefreshIcon /> {t('source.load.reload')}
               </>
             ) : (
-              t('source.load.load')
+              byTitle ? t('source.search.action') : t('source.load.load')
             )}
           </button>
         </form>
@@ -223,6 +253,22 @@ export function SourceBar({
           {simple && <span>{t('settings.open')}</span>}
         </button>
       </div>
+
+      {searchError && <div className="banner" role="alert">{searchError}</div>}
+      {matches !== null && (
+        <div className="mangeek-results" aria-label={t('source.search.results')} role="region">
+          {matches.length === 0 && <span role="status">{t('source.search.empty')}</span>}
+          {matches.map((match) => (
+            <button type="button" className="btn ghost" key={match.url} disabled={busy} onClick={() => {
+              resetSearch();
+              setTyped(match.url);
+              onLoad(match.url);
+            }}>
+              {match.title}
+            </button>
+          ))}
+        </div>
+      )}
 
       {!simple && (
         <div className="filter-row">

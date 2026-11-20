@@ -1,3 +1,22 @@
+export namespace grabber {
+
+	export class ManGeekResult {
+	    title: string;
+	    url: string;
+
+	    static createFrom(source: any = {}) {
+	        return new ManGeekResult(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.title = source["title"];
+	        this.url = source["url"];
+	    }
+	}
+
+}
+
 export namespace main {
 	
 	export class ChapterDTO {
