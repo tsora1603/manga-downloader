@@ -9,7 +9,7 @@ import type { T as Translator } from './i18n';
 import { T, useI18n } from './i18n/react';
 import { AlertIcon, ChevronIcon, LinkIcon, LockIcon, RefreshIcon } from './icons';
 import { Mascot } from './Mascot';
-import { extendsSpan, moveActive, pickable, spanIndices } from './listKeys';
+import { extendsSpan, moveActive, isDecimalChapter, pickable, spanIndices } from './listKeys';
 import { hostOf } from './run';
 import type { Chapter, State } from './types';
 import { useVirtualList } from './virtual';
@@ -126,7 +126,7 @@ function FailedState({ state, onRetry }: { state: State; onRetry: () => void }) 
 
 function ChapterList({
   state,
-  chapters,
+  chapters: listed,
   selected,
   disabled,
   onToggle,
@@ -137,6 +137,10 @@ function ChapterList({
   onError,
 }: Props) {
   const { t } = useI18n();
+  const chapters = useMemo(
+    () => state.options.skipDecimalChapters ? listed.filter((ch) => !isDecimalChapter(ch)) : listed,
+    [listed, state.options.skipDecimalChapters],
+  );
   const [rangeText, setRangeText] = useState('');
   const [rangeNote, setRangeNote] = useState<{ text: string; bad: boolean } | null>(null);
   const [active, setActive] = useState(-1);
@@ -367,7 +371,7 @@ function ChapterList({
                 </span>
               </>
             )}
-            <span>{t('count.chapter', { count: state.chapterCount })}</span>
+            <span>{t('count.chapter', { count: chapters.length })}</span>
             {byParts && split > 0 && (
               <>
                 <span className="dot" aria-hidden="true">

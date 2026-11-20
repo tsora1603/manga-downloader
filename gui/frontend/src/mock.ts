@@ -48,6 +48,7 @@
 // &locked lists every 50th chapter as locked: the list shows its lock
 // and never selects it, as the backend does.
 
+import { isDecimalChapter } from './listKeys';
 import type { Api, Unsubscribe } from './api';
 import { createT, LANGS, resolveLanguage, type Lang, type LangPref, type Vars } from './i18n';
 import type { Chapter, FilterChoice, Job, LogLine, Message, Options, Prefs, State, Summary, Update } from './types';
@@ -261,6 +262,7 @@ function defaultOptions(shot: boolean, epub: boolean): Options {
     compress: false,
     skipPages: '',
     skipExisting: false,
+    skipDecimalChapters: false,
     filenameTemplate: TEMPLATE_DEFAULT,
     browserVisible: false,
   };
@@ -445,6 +447,7 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
   let title = '';
   let chapters: Chapter[] = [];
   let selected = new Set<number>();
+  const selectable = (ch: Chapter) => !ch.locked && !(options.skipDecimalChapters && isDecimalChapter(ch));
   // the Volumes box and the site's volumes, as the backend keeps them per load
   let volumesText = '';
   let volumesSite = '';
@@ -995,7 +998,7 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
     url = 'https://example.com/manga/one-piece';
     finishLoad();
     for (const c of [...chapters.slice(0, 12), ...chapters.slice(40, 52)]) {
-      if (!c.locked) {
+      if (selectable(c)) {
         selected.add(c.index);
       }
     }
@@ -1022,7 +1025,7 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
     selected = new Set(
       chapters
         .slice(0, Math.min(32, chapters.length))
-        .filter((c) => !c.locked)
+        .filter(selectable)
         .map((c) => c.index),
     );
     selectionBus.emit(selectionOf());
@@ -1031,7 +1034,7 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
     url = 'https://example.com/manga/one-piece';
     options.packAs = 'parts';
     // every part that isn't locked: chapters 1-4, and the one open part of 19
-    selected = new Set(chapters.filter((c) => !c.locked).map((c) => c.index));
+    selected = new Set(chapters.filter(selectable).map((c) => c.index));
     selectionBus.emit(selectionOf());
   }
   if (scenario === 'volumes-running') {
@@ -1163,7 +1166,7 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
       if (index < 0 || index >= chapters.length) {
         return;
       }
-      if (on && !chapters[index].locked) {
+      if (on && selectable(chapters[index])) {
         selected.add(index);
       } else if (!on) {
         selected.delete(index);
@@ -1180,7 +1183,7 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
       }
       for (const index of indices) {
         if (on) {
-          if (!chapters[index].locked) {
+          if (selectable(chapters[index])) {
             selected.add(index);
           }
         } else {
@@ -1194,7 +1197,7 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
       if (loading || running) {
         throw reject('errors.busy');
       }
-      selected = new Set(on ? chapters.filter((c) => !c.locked).map((c) => c.index) : []);
+      selected = new Set(on ? chapters.filter(selectable).map((c) => c.index) : []);
       selectionBus.emit(selectionOf());
       push();
     },
@@ -1213,7 +1216,7 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
         }
         const hi = b ?? a;
         for (const c of chapters) {
-          if (c.number >= a && c.number <= hi && !c.locked) {
+          if (c.number >= a && c.number <= hi && selectable(c)) {
             matched.push(c.index);
           }
         }
@@ -1230,6 +1233,12 @@ export function createMockApi(setup: Scenario | Partial<MockSetup> = 'empty'): A
         throw reject('errors.busy');
       }
       Object.assign(options, next);
+      if (options.skipDecimalChapters) {
+        for (const index of selected) {
+          if (!selectable(chapters[index])) selected.delete(index);
+        }
+        selectionBus.emit(selectionOf());
+      }
       push();
     },
     async setVolumes(text) {

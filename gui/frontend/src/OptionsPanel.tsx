@@ -93,6 +93,14 @@ export function OptionsPanel({ state, onOptions, onChooseFolder, onError }: Prop
           onChange={(skipExisting) => set({ skipExisting })}
         />
 
+        <Switch
+          label={t('options.skipDecimalChapters.label')}
+          description={t('options.skipDecimalChapters.hint')}
+          checked={o.skipDecimalChapters}
+          disabled={locked}
+          onChange={(skipDecimalChapters) => set({ skipDecimalChapters })}
+        />
+
         <Segmented<Options['format']>
           label={t('options.format.label')}
           value={o.format}

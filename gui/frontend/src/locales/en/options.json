@@ -13,6 +13,10 @@
     "label": "Skip existing files",
     "hint": "Files already in the folder aren't downloaded again. To download a broken file again, delete it first."
   },
+  "skipDecimalChapters": {
+    "label": "Skip decimal chapters",
+    "hint": "Hide and skip chapters numbered 1.1, 2.2 and similar."
+  },
   "format": {
     "label": "Format",
     "cbz": "CBZ",

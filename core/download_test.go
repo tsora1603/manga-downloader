@@ -328,6 +328,23 @@ func zipEntries(t *testing.T, path string) []string {
 	return names
 }
 
+func TestDownloadSkipDecimalChapters(t *testing.T) {
+	site := newFakeSite(t, fakeChapter{number: 1, pages: 1}, fakeChapter{number: 1.1, pages: 1})
+	series, dir := newSeries(t, site, true)
+	series.settings.SkipDecimalChapters = true
+	chapters := listed(site)
+	if name, err := series.Download(context.Background(), chapters[1:], nil, "", nil); name != "" || err != nil || len(cbzFiles(t, dir)) != 0 {
+		t.Fatalf("decimal-only bundle: %q, %v", name, err)
+	}
+	name, err := series.Download(context.Background(), chapters, nil, "1-1.1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if entries := zipEntries(t, filepath.Join(dir, name)); len(entries) != 1 {
+		t.Fatalf("bundle entries: %v", entries)
+	}
+}
+
 func TestDownloadNonBundle(t *testing.T) {
 	site := newFakeSite(t,
 		fakeChapter{number: 1, pages: 2},

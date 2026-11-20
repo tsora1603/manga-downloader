@@ -104,6 +104,14 @@ func Run(cmd *cobra.Command, args []string) {
 
 	series := openSeries(getUrlArg(args))
 	chapters := series.Chapters
+	if settings.SkipDecimalChapters {
+		chapters = core.WithoutDecimalChapters(chapters)
+		if len(chapters) == 0 {
+			yellow("No chapters remain after skipping decimal chapters")
+			exit(1)
+			return
+		}
+	}
 
 	var rngs []ranges.Range
 	// "all" as the ranges argument is the answer yes to the prompt below, for non-interactive runs
@@ -131,7 +139,7 @@ func Run(cmd *cobra.Command, args []string) {
 	// some sites prune old chapters (they soft-404 to the series page), so a
 	// user-typed range below the first listed chapter would silently skip
 	// that part; warn only when the range was explicit, not synthesised
-	if floor := chapters[0].GetNumber(); rangeRequested && core.RequestsBelowListedFloor(rngs, floor) {
+	if floor := series.Chapters[0].GetNumber(); rangeRequested && core.RequestsBelowListedFloor(rngs, floor) {
 		yellow(
 			"Only chapters %g and up are listed for this series; the requested chapters below that will be skipped",
 			floor,
@@ -384,6 +392,7 @@ func Execute() {
 
 // init sets the flags for the root command
 func init() {
+	rootCmd.Flags().BoolVar(&settings.SkipDecimalChapters, "skip-decimal-chapters", false, "skip chapters with fractional numbers such as 1.1 and 2.2")
 	rootCmd.Flags().BoolVarP(&settings.Bundle, "bundle", "b", false, "bundle all specified chapters into a single file")
 	rootCmd.Flags().Uint8VarP(&settings.MaxConcurrency.Chapters, "concurrency", "c", 5, "number of concurrent chapter downloads, hard-limited to 5")
 	rootCmd.Flags().Uint8VarP(&settings.MaxConcurrency.Pages, "concurrency-pages", "C", 10, "number of concurrent page downloads, hard-limited to 10")

@@ -13,6 +13,10 @@
     "label": "Omitir archivos existentes",
     "hint": "Los archivos que ya están en la carpeta no se vuelven a descargar. Si quieres volver a descargar un archivo dañado, bórralo primero."
   },
+  "skipDecimalChapters": {
+    "label": "Omitir capítulos decimales",
+    "hint": "Oculta y omite capítulos con números como 1.1 o 2.2."
+  },
   "format": {
     "label": "Formato",
     "cbz": "CBZ",

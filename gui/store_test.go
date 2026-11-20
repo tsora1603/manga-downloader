@@ -17,19 +17,20 @@ import (
 func TestOptionsSaveAndLoadRoundTrip(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "gui.json")
 	want := OptionsDTO{
-		OutputDir:        "/books",
-		Format:           "epub",
-		ReadingDirection: "ltr",
-		PackAs:           PackBundle,
-		Language:         "es",
-		Scanlator:        "group",
-		ConvertImages:    "avif,webp",
-		JPEGQuality:      85,
-		Compress:         true,
-		SkipPages:        "2,-1",
-		SkipExisting:     true,
-		FilenameTemplate: "{{.Series}} {{.Number}}",
-		BrowserVisible:   true,
+		OutputDir:           "/books",
+		Format:              "epub",
+		ReadingDirection:    "ltr",
+		PackAs:              PackBundle,
+		Language:            "es",
+		Scanlator:           "group",
+		ConvertImages:       "avif,webp",
+		JPEGQuality:         85,
+		Compress:            true,
+		SkipPages:           "2,-1",
+		SkipExisting:        true,
+		SkipDecimalChapters: true,
+		FilenameTemplate:    "{{.Series}} {{.Number}}",
+		BrowserVisible:      true,
 	}
 	if err := saveOptions(path, want, defaultPrefs()); err != nil {
 		t.Fatal(err)

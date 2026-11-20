@@ -30,6 +30,8 @@ type Settings struct {
 	// SkipExisting skips a chapter, volume or bundle whose file is already in
 	// the output directory, before its pages are fetched
 	SkipExisting bool
+	// SkipDecimalChapters leaves out chapters with fractional numbers.
+	SkipDecimalChapters bool
 	// MaxConcurrency determines max download concurrency
 	MaxConcurrency MaxConcurrency
 	// Language is the preferred language for downloading chapters

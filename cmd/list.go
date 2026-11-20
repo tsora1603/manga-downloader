@@ -98,7 +98,11 @@ func runList(cmd *cobra.Command, args []string) {
 	defer browser.SetAttentionHandler(nil)
 	browser.SetVisible(settings.BrowserVisible)
 
-	l := listingOf(openSeries(args[0]))
+	series := openSeries(args[0])
+	if settings.SkipDecimalChapters {
+		series.Chapters = core.WithoutDecimalChapters(series.Chapters)
+	}
+	l := listingOf(series)
 	if listJSON {
 		cerr(writeListingJSON(os.Stdout, l), "Error writing the listing: ")
 		return
@@ -250,6 +254,7 @@ func filterText(f *listedFilter) string {
 }
 
 func init() {
+	listCmd.Flags().BoolVar(&settings.SkipDecimalChapters, "skip-decimal-chapters", false, "skip chapters with fractional numbers such as 1.1 and 2.2")
 	listCmd.Flags().StringVarP(&settings.Language, "language", "l", "", `only list the specified language ("all" lists every language, on sites listing several)`)
 	listCmd.Flags().StringVarP(&settings.Scanlator, "scanlator", "s", "", `only list the releases of the specified scanlation group (the default, and "all", list every group's)`)
 	listCmd.Flags().BoolVar(&settings.BrowserVisible, "browser-visible", false, "always show the browser window; rarely needed, as it opens on its own for sites that need it")

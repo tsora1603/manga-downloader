@@ -14,6 +14,7 @@ const base: Options = {
   compress: false,
   skipPages: '',
   skipExisting: false,
+  skipDecimalChapters: false,
   filenameTemplate: '{{.Series}}',
   browserVisible: false,
 };

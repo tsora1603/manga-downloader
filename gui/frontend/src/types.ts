@@ -27,6 +27,7 @@ export interface Options {
   skipPages: string;
   /** Leaves out the chapters, volumes and bundles whose file is already in the folder */
   skipExisting: boolean;
+  skipDecimalChapters: boolean;
   filenameTemplate: string;
   browserVisible: boolean;
 }

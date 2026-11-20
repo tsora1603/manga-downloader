@@ -406,7 +406,16 @@ func (c *Controller) Configure(fn func(*grabber.Settings)) error {
 		c.mu.Unlock()
 		return errBusy
 	}
+	wasSkipping := c.settings.SkipDecimalChapters
 	fn(c.settings)
+	if !wasSkipping && c.settings.SkipDecimalChapters {
+		for i, on := range c.selected {
+			if on && !c.selectable(i) {
+				c.selected[i] = false
+			}
+		}
+		c.selGen++
+	}
 	c.mu.Unlock()
 	c.emit()
 	return nil
@@ -1101,10 +1110,10 @@ func (c *Controller) SelectedCount() int {
 	return n
 }
 
-// selectable reports whether chapter i may be selected: the ones the
-// listing marks as locked can't be, as a run could only fail them. Needs c.mu.
+// selectable checks the site lock and the decimal-chapter option. Needs c.mu.
 func (c *Controller) selectable(i int) bool {
-	return !grabber.LockedOf(c.series.Chapters[i])
+	ch := c.series.Chapters[i]
+	return !grabber.LockedOf(ch) && !(c.settings.SkipDecimalChapters && core.IsDecimalChapter(ch))
 }
 
 // SetSelected selects or deselects chapter i; a locked chapter is never

@@ -368,6 +368,7 @@ the check.
 | `--compress`          |       | Re-encode pages to JPEG when that's smaller (not GIF)          | off            |
 | `--jpeg-quality`      |       | JPEG quality of re-encoded pages (1-100); lower shrinks JPEG pages more | `90`           |
 | `--skip-pages`        |       | Pages to exclude from every chapter (`-1` is the last)         | none           |
+| `--skip-decimal-chapters` |   | Exclude fractional chapter numbers such as 1.1 and 2.2 from downloads or `list` | off |
 | `--skip-existing`     |       | Skip chapters, volumes or bundles already in the output folder | off            |
 | `--concurrency`       | `-c`  | Number of chapters downloaded at once (max 5)                  | 5              |
 | `--concurrency-pages` | `-C`  | Number of pages downloaded at once per chapter (max 10)        | 10             |

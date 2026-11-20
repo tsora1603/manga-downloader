@@ -13,6 +13,10 @@
     "label": "Omet els fitxers existents",
     "hint": "Els fitxers que ja són a la carpeta no es tornen a descarregar. Si vols tornar a descarregar un fitxer malmès, esborra'l primer."
   },
+  "skipDecimalChapters": {
+    "label": "Omet els capítols decimals",
+    "hint": "Amaga i omet els capítols amb números com 1.1 o 2.2."
+  },
   "format": {
     "label": "Format",
     "cbz": "CBZ",

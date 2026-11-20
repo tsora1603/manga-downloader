@@ -884,6 +884,53 @@ func TestEventsNameTheReleaseWhenCopiesNeedAGroup(t *testing.T) {
 }
 
 // a chapter the listing marks as locked is never selected, by any path
+func TestSkipDecimalChaptersSelection(t *testing.T) {
+	c, _, _ := newTestController(t, false, nil, fakeChapter{number: 1}, fakeChapter{number: 1.1}, fakeChapter{number: 2}, fakeChapter{number: 2.2})
+	if err := c.Load("https://example.com/manga/test"); err != nil {
+		t.Fatal(err)
+	}
+	setSkip := func(on bool) {
+		t.Helper()
+		if err := c.Configure(func(s *grabber.Settings) { s.SkipDecimalChapters = on }); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := c.SetAll(true); err != nil {
+		t.Fatal(err)
+	}
+	setSkip(true)
+	check := func(want []int) {
+		t.Helper()
+		if got := c.SelectedIndices(); !reflect.DeepEqual(got, want) {
+			t.Fatalf("selected %v, want %v", got, want)
+		}
+	}
+	check([]int{0, 2})
+	if err := c.SetSelected(1, true); err != nil {
+		t.Fatal(err)
+	}
+	if err := c.SetSelectedMany([]int{1, 3}, true); err != nil {
+		t.Fatal(err)
+	}
+	check([]int{0, 2})
+	if err := c.SetAll(false); err != nil {
+		t.Fatal(err)
+	}
+	if n, err := c.SelectRange("1-3"); n != 2 || err != nil {
+		t.Fatalf("range selected %d, err %v", n, err)
+	}
+	if err := c.SetAll(true); err != nil {
+		t.Fatal(err)
+	}
+	check([]int{0, 2})
+	setSkip(false)
+	check([]int{0, 2})
+	if err := c.SetAll(true); err != nil {
+		t.Fatal(err)
+	}
+	check([]int{0, 1, 2, 3})
+}
+
 func TestLockedChaptersCannotBeSelected(t *testing.T) {
 	list := chapters(5, 1)
 	list[1].locked = true

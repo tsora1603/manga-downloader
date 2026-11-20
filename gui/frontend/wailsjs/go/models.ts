@@ -213,6 +213,7 @@ export namespace main {
 	    jpegQuality: number;
 	    compress: boolean;
 	    skipPages: string;
+	    skipDecimalChapters: boolean;
 	    skipExisting: boolean;
 	    filenameTemplate: string;
 	    browserVisible: boolean;
@@ -233,6 +234,7 @@ export namespace main {
 	        this.jpegQuality = source["jpegQuality"];
 	        this.compress = source["compress"];
 	        this.skipPages = source["skipPages"];
+	        this.skipDecimalChapters = source["skipDecimalChapters"];
 	        this.skipExisting = source["skipExisting"];
 	        this.filenameTemplate = source["filenameTemplate"];
 	        this.browserVisible = source["browserVisible"];

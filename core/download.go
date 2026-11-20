@@ -298,6 +298,12 @@ func (r *volumeRun) archive() {
 // new chapters and returns the context's error once the started ones have
 // finished.
 func (s *Series) Download(ctx context.Context, chapters grabber.Filterables, skip []ranges.Range, rng string, ev Events) (string, error) {
+	if s.settings.SkipDecimalChapters {
+		chapters = WithoutDecimalChapters(chapters)
+		if len(chapters) == 0 {
+			return "", nil
+		}
+	}
 	if ev == nil {
 		ev = NoEvents{}
 	}

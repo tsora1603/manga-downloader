@@ -4,6 +4,10 @@
 
 import type { Chapter } from './types';
 
+export function isDecimalChapter(chapter: Chapter): boolean {
+  return !chapter.unnumbered && !Number.isInteger(chapter.number);
+}
+
 /** The chapters that can be picked: the ones the listing marks locked can't */
 export function pickable(chapters: Chapter[]): Chapter[] {
   return chapters.filter((c) => !c.locked);

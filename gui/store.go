@@ -19,19 +19,20 @@ import (
 // OptionsDTO are the options the window exposes. The frontend edits them and
 // gui.json stores them, so the JSON names are part of the saved file.
 type OptionsDTO struct {
-	OutputDir        string `json:"outputDir"`
-	Format           string `json:"format"`
-	ReadingDirection string `json:"readingDirection"`
-	PackAs           string `json:"packAs"`
-	Language         string `json:"language"`
-	Scanlator        string `json:"scanlator"`
-	ConvertImages    string `json:"convertImages"`
-	JPEGQuality      int    `json:"jpegQuality"`
-	Compress         bool   `json:"compress"`
-	SkipPages        string `json:"skipPages"`
-	SkipExisting     bool   `json:"skipExisting"`
-	FilenameTemplate string `json:"filenameTemplate"`
-	BrowserVisible   bool   `json:"browserVisible"`
+	OutputDir           string `json:"outputDir"`
+	Format              string `json:"format"`
+	ReadingDirection    string `json:"readingDirection"`
+	PackAs              string `json:"packAs"`
+	Language            string `json:"language"`
+	Scanlator           string `json:"scanlator"`
+	ConvertImages       string `json:"convertImages"`
+	JPEGQuality         int    `json:"jpegQuality"`
+	Compress            bool   `json:"compress"`
+	SkipPages           string `json:"skipPages"`
+	SkipDecimalChapters bool   `json:"skipDecimalChapters"`
+	SkipExisting        bool   `json:"skipExisting"`
+	FilenameTemplate    string `json:"filenameTemplate"`
+	BrowserVisible      bool   `json:"browserVisible"`
 }
 
 // PrefsDTO are the app-only preferences, which the CLI has no flag for, so they
@@ -143,19 +144,20 @@ func defaultOutputDir() string {
 // optionsOf returns the options the window shows for s
 func optionsOf(s grabber.Settings) OptionsDTO {
 	return OptionsDTO{
-		OutputDir:        s.OutputDir,
-		Format:           s.Format,
-		ReadingDirection: s.ReadingDirection,
-		PackAs:           packAsOf(s),
-		Language:         s.Language,
-		Scanlator:        s.Scanlator,
-		ConvertImages:    s.ConvertImages,
-		JPEGQuality:      s.JPEGQuality,
-		Compress:         s.Compress,
-		SkipPages:        s.SkipPages,
-		SkipExisting:     s.SkipExisting,
-		FilenameTemplate: s.FilenameTemplate,
-		BrowserVisible:   s.BrowserVisible,
+		OutputDir:           s.OutputDir,
+		Format:              s.Format,
+		ReadingDirection:    s.ReadingDirection,
+		PackAs:              packAsOf(s),
+		Language:            s.Language,
+		Scanlator:           s.Scanlator,
+		ConvertImages:       s.ConvertImages,
+		JPEGQuality:         s.JPEGQuality,
+		Compress:            s.Compress,
+		SkipPages:           s.SkipPages,
+		SkipExisting:        s.SkipExisting,
+		SkipDecimalChapters: s.SkipDecimalChapters,
+		FilenameTemplate:    s.FilenameTemplate,
+		BrowserVisible:      s.BrowserVisible,
 	}
 }
 
@@ -173,6 +175,7 @@ func applyOptions(s *grabber.Settings, o OptionsDTO) {
 	s.Compress = o.Compress
 	s.SkipPages = o.SkipPages
 	s.SkipExisting = o.SkipExisting
+	s.SkipDecimalChapters = o.SkipDecimalChapters
 	s.FilenameTemplate = o.FilenameTemplate
 	s.BrowserVisible = o.BrowserVisible
 }

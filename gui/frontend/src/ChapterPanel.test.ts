@@ -87,6 +87,27 @@ describe('ChapterTitle in another language', () => {
   });
 });
 
+describe('Skipping decimal chapters', () => {
+  it('hides fractional numbers and keeps original row indices for selection', async () => {
+    const state = await createMockApi({ scenario: 'loaded', freeze: true }).state();
+    const chapters = [1, 1.1, 2].map((number, index) => ({
+      number, index, title: `Chapter ${number}. Title`, language: '', group: '', volume: 0, locked: false,
+    }));
+    const noop = async () => {};
+    const render = (skipDecimalChapters: boolean) => renderToStaticMarkup(createElement(ChapterPanel, {
+      state: { ...state, selectedCount: 1, options: { ...state.options, skipDecimalChapters } },
+      chapters, selected: [2], disabled: false, onToggle: noop, onToggleMany: noop,
+      onSetAll: noop, onRange: async () => 0, onVolumes: noop, onReload: noop, onError: noop,
+    }));
+    expect(render(false)).toContain('Chapter 1.1. Title');
+    const filtered = render(true);
+    expect(filtered).not.toContain('Chapter 1.1. Title');
+    expect(filtered).toContain('Chapter 1. Title');
+    expect(filtered).toContain('Chapter 2. Title');
+    expect(filtered).toContain('aria-selected="true"');
+  });
+});
+
 describe('ChapterPanel of a parts run', () => {
   it('heads a merged chapter with its title and count, and shows each part by its part alone', async () => {
     const api = createMockApi({ scenario: 'parts', uiLanguage: 'ca' });

@@ -8,6 +8,7 @@ package core
 import (
 	"errors"
 	"fmt"
+	"math"
 	"slices"
 	"strconv"
 	"strings"
@@ -234,6 +235,19 @@ func (l *Listing) Series(s *grabber.Settings) (*Series, error) {
 		Scanlators: scanlators,
 		settings:   s,
 	}, nil
+}
+
+// IsDecimalChapter uses the listed chapter number, ignoring punctuation in its title.
+func IsDecimalChapter(ch grabber.Filterable) bool {
+	n := ch.GetNumber()
+	return n != math.Trunc(n) && !grabber.Unnumbered(ch)
+}
+
+// WithoutDecimalChapters preserves the full listing for volume naming and later selections.
+func WithoutDecimalChapters(chapters grabber.Filterables) grabber.Filterables {
+	return chapters.Filter(func(ch grabber.Filterable) bool {
+		return !IsDecimalChapter(ch)
+	})
 }
 
 // AllChaptersRange builds the range covering every listed chapter, for

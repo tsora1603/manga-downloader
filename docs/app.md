@@ -40,7 +40,8 @@ For ManGeek, type the manga title in the URL box and press Enter or click **Sear
 4. **Set the options** in the *Options* tab: the folder the files go to (the
    app creates it if it's missing),
    *Skip existing files* (chapters already in the folder aren't downloaded
-   again), the format (CBZ, CBR, Folder or EPUB; EPUB adds a *Reading
+   again), *Skip decimal chapters* (hides chapters like 1.1 and 2.2 and removes
+   them from your current selection), the format (CBZ, CBR, Folder or EPUB; EPUB adds a *Reading
    direction*) and *Pack as*: *Chapters* (a file each), *Merged* (a chapter's
    parts in one file), *Volumes* (a file per volume) or *One file* (everything
    together). Under *Pages*, *Convert to JPEG* ticks *AVIF* (on by default,
