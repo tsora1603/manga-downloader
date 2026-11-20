@@ -31,7 +31,6 @@ function render(pref: LangPref, s: State, systemLanguages = ['fr-FR']) {
       createElement(SettingsDialog, {
         state: s,
         onClose: () => undefined,
-        onSaveSearchKey: async () => {},
         onCheckUpdates: () => undefined,
         onSimpleStart: () => undefined,
         onOpenURL: () => undefined,

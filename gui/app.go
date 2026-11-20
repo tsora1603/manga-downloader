@@ -485,14 +485,9 @@ func (a *App) Clear() error {
 	return nil
 }
 
-// SearchSeries returns matching titles for the source bar.
-func (a *App) SearchSeries(title string) (grabber.SearchResults, error) {
-	return grabber.SearchSeries(title)
-}
-
-// SaveSearchKey stores a key without sending it back to the frontend.
-func (a *App) SaveSearchKey(key string) error {
-	return grabber.SaveSearchKey(key)
+// SearchManGeek returns series links for the source bar's title search.
+func (a *App) SearchManGeek(title string) ([]grabber.ManGeekResult, error) {
+	return grabber.SearchManGeek(title)
 }
 
 // Load identifies the site for url and fetches its title and chapters. It

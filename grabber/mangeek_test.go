@@ -113,7 +113,7 @@ func (rt manGeekSearchTransport) RoundTrip(req *nethttp.Request) (*nethttp.Respo
 	if err != nil || string(body) != `{"tags":[]}` || req.Header.Get("Content-Type") != "application/json" {
 		rt.t.Fatalf("search payload: %q, %v", body, err)
 	}
-	const result = `[{"id":7,"title":"Café","thumbnail":"http://51.79.78.152/test.webp"},{"id":7,"title":"Duplicate"},{"id":8,"title":"Sol"},{"title":"No ID"}]`
+	const result = `[{"id":7,"title":"Café"},{"id":7,"title":"Duplicate"},{"id":8,"title":"Sol"},{"title":"No ID"}]`
 	return &nethttp.Response{StatusCode: 200, Header: nethttp.Header{}, Body: io.NopCloser(strings.NewReader(result)), Request: req}, nil
 }
 
@@ -124,7 +124,7 @@ func TestSearchManGeek(t *testing.T) {
 		t.Fatal("empty query accepted")
 	}
 	matches, err := SearchManGeek("  CAFÉ / Sol  ")
-	if err != nil || len(matches) != 2 || matches[0] != (SeriesMatch{Title: "Café", URL: "https://mangeek.app/manga/7", Source: "mangeek.app", Language: "pt-br", Thumbnail: "https://static.geekstations.com.br/test.webp"}) || matches[1].Title != "Sol" {
+	if err != nil || len(matches) != 2 || matches[0] != (ManGeekResult{"Café", "https://mangeek.app/manga/7"}) || matches[1].Title != "Sol" {
 		t.Fatalf("search results: %+v, %v", matches, err)
 	}
 }

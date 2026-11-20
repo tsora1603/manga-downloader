@@ -12,14 +12,7 @@ The app opens on a simple start screen: the logo, the URL box with its *Paste*
 button, *Load* and *Settings*. (To open on the full window instead, turn off
 *Open with the simple view* under *Settings* → *Start screen*.) From there:
 
-Type a manga title in the URL box and press Enter or click **Search**. Each
-result shows its title, site, language and a thumbnail if available. Select
-a result to load its chapters. ManGeek works directly. To search the other
-supported English and Brazilian Portuguese sites with Tavily, open **Settings**,
-enter your **Tavily API key**, and click **Save key**. The app saves the
-key in the per-user configuration folder for both the app and the CLI. You can
-get a key from the [Tavily API dashboard](https://app.tavily.com/).
-Each title search can use several API requests.
+For ManGeek, type the manga title in the URL box and press Enter or click **Search ManGeek**. Select a result to load its chapters.
 
 1. **Paste the series' URL** into the box (or use its *Paste* button). The
    series loads on its own once you paste or stop typing; *Load* or Enter

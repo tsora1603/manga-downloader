@@ -42,12 +42,8 @@ export function Options() {
   return window['go']['main']['App']['Options']();
 }
 
-export function SaveSearchKey(arg1) {
-  return window['go']['main']['App']['SaveSearchKey'](arg1);
-}
-
-export function SearchSeries(arg1) {
-  return window['go']['main']['App']['SearchSeries'](arg1);
+export function SearchManGeek(arg1) {
+  return window['go']['main']['App']['SearchManGeek'](arg1);
 }
 
 export function SelectRange(arg1) {

@@ -23,12 +23,5 @@
     "issues": "Report a problem",
     "kofi": "Support me on Ko-fi",
     "madeBy": "Made with love by <author>{{author}}</author> · © {{years}} · <license>{{license}}</license>"
-  },
-  "search": {
-    "key": "Tavily API key",
-    "save": "Save key",
-    "remove": "Remove saved key",
-    "saved": "Key saved.",
-    "removed": "Saved key removed."
   }
 }

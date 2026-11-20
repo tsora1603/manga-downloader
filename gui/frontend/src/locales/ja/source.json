@@ -1,7 +1,7 @@
 {
   "url": {
-    "label": "シリーズのURLまたは作品名",
-    "placeholder": "シリーズのリンクを貼り付けるか、作品名を入力",
+    "label": "シリーズのURLまたはManGeekの作品名",
+    "placeholder": "シリーズ・話のリンクを貼り付けるか、ManGeekの作品名を入力",
     "clear": "クリア",
     "clearLabel": "URLをクリア",
     "paste": "貼り付け",
@@ -24,9 +24,8 @@
     "appliesOnLoad": "作品の読み込み時に適用されます"
   },
   "search": {
-    "action": "検索",
-    "results": "作品の検索結果",
-    "empty": "該当する作品は見つかりませんでした。",
-    "needsKey": "ManGeekのみを検索しました。他の対応サイトも検索するには、設定でTavilyのAPIキーを登録してください。"
+    "action": "ManGeekで検索",
+    "results": "ManGeekの検索結果",
+    "empty": "該当する作品は見つかりませんでした。"
   }
 }

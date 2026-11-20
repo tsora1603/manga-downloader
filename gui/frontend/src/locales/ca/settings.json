@@ -23,12 +23,5 @@
     "issues": "Informa d'un problema",
     "kofi": "Dona'm suport a Ko-fi",
     "madeBy": "Fet amb amor per <author>{{author}}</author> · © {{years}} · <license>{{license}}</license>"
-  },
-  "search": {
-    "key": "Clau de l’API de Tavily",
-    "save": "Desa la clau",
-    "remove": "Elimina la clau desada",
-    "saved": "Clau desada.",
-    "removed": "Clau desada eliminada."
   }
 }

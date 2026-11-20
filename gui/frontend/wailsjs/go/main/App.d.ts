@@ -23,9 +23,7 @@ export function OpenFolder():Promise<void>;
 
 export function Options():Promise<main.OptionsDTO>;
 
-export function SaveSearchKey(arg1:string):Promise<void>;
-
-export function SearchSeries(arg1:string):Promise<grabber.SearchResults>;
+export function SearchManGeek(arg1:string):Promise<Array<grabber.ManGeekResult>>;
 
 export function SelectRange(arg1:string):Promise<number>;
 

@@ -1,7 +1,7 @@
 {
   "url": {
-    "label": "Series URL or manga title",
-    "placeholder": "Paste a series link or enter a manga title",
+    "label": "Series URL or ManGeek title",
+    "placeholder": "Paste a series or chapter link, or type a ManGeek title",
     "clear": "Clear",
     "clearLabel": "Clear the URL",
     "paste": "Paste",
@@ -24,9 +24,8 @@
     "appliesOnLoad": "Applied when the series loads"
   },
   "search": {
-    "action": "Search",
-    "results": "Title search results",
-    "empty": "No matching titles found.",
-    "needsKey": "Only ManGeek was searched. Add a Tavily API key in Settings to include other supported sites."
+    "action": "Search ManGeek",
+    "results": "ManGeek search results",
+    "empty": "No matching titles on ManGeek."
   }
 }

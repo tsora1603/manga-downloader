@@ -1,7 +1,7 @@
 // The settings dialog: the app-only preferences (language, start view, update check) and
 // the About footer. Controls apply at once, so there is no Save or Cancel.
 
-import { useEffect, useRef, useState, type MouseEvent } from 'react';
+import { useEffect, useRef, type MouseEvent } from 'react';
 import { errorMessage } from './format';
 import { LANG_INFO, LANGS, type Lang, type LangPref } from './i18n';
 import { T, useI18n } from './i18n/react';
@@ -13,7 +13,6 @@ import type { State } from './types';
 interface Props {
   state: State;
   onClose: () => void;
-  onSaveSearchKey: (key: string) => Promise<void>;
   onCheckUpdates: (on: boolean) => void;
   onSimpleStart: (on: boolean) => void;
   onOpenURL: (url: string) => void;
@@ -33,24 +32,9 @@ export function websiteURL(lang: Lang): string {
   return `https://mangadownloader.cat/${WEBSITE_PATHS[lang]}`;
 }
 
-export function SettingsDialog({ state, onClose, onSaveSearchKey, onCheckUpdates, onSimpleStart, onOpenURL, onError }: Props) {
+export function SettingsDialog({ state, onClose, onCheckUpdates, onSimpleStart, onOpenURL, onError }: Props) {
   const { t, pref, systemLang, lang, setLanguage } = useI18n();
   const dialog = useRef<HTMLDialogElement>(null);
-  const [key, setKey] = useState('');
-  const [keyStatus, setKeyStatus] = useState('');
-  const [saving, setSaving] = useState(false);
-  async function storeKey(value: string) {
-    setSaving(true);
-    try {
-      await onSaveSearchKey(value);
-      setKey('');
-      setKeyStatus(value ? t('settings.search.saved') : t('settings.search.removed'));
-    } catch (e) {
-      setKeyStatus(errorMessage(e, t));
-    } finally {
-      setSaving(false);
-    }
-  }
   const devBuild = state.releaseURL === '';
 
   useEffect(() => {
@@ -104,16 +88,6 @@ export function SettingsDialog({ state, onClose, onSaveSearchKey, onCheckUpdates
         </header>
 
         <div className="settings-body">
-          <form className="opt-group search-key" onSubmit={(e) => { e.preventDefault(); void storeKey(key.trim()); }}>
-            <label htmlFor="tavily-key">{t('settings.search.key')}</label>
-            <input id="tavily-key" type="password" value={key} disabled={saving} autoComplete="off"
-              onChange={(e) => { setKey(e.target.value); setKeyStatus(''); }} />
-            <div>
-              <button type="submit" className="btn small" disabled={saving || !key.trim()}>{t('settings.search.save')}</button>
-              <button type="button" className="btn small ghost" disabled={saving} onClick={() => void storeKey('')}>{t('settings.search.remove')}</button>
-            </div>
-            {keyStatus && <small role="status">{keyStatus}</small>}
-          </form>
           <section className="opt-group">
             <h3>{t('settings.language.heading')}</h3>
             <SelectField

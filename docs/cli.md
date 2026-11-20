@@ -4,24 +4,10 @@ Every flag and behaviour of `manga-downloader`, with the [table of all
 flags](#options) at the end. For installing it see the
 [README](../README.md#installing-the-command-line-tool).
 
-## Search supported sites
+## Search ManGeek
 
-Run `manga-downloader search "One Piece"` for matching titles and links. With
-`--json`, each result includes its source, language and a thumbnail URL when
-available. Use a result URL with `list` or the download command.
-
-ManGeek is searched directly. To include indexed pages from the other supported
-sites, save a Tavily API key in the desktop app’s Settings or export
-`TAVILY_API_KEY` in the shell that runs the command. The environment
-variable takes precedence. The desktop and CLI share the saved key.
-
-A search sends the title to ManGeek and, when configured, to Tavily.
-Tavily runs a basic search for each group of up to 300 domains per language.
-The current site list uses two English requests and one Portuguese request,
-at one Tavily credit each. For Portuguese results, the downloader checks the
-site or URL for a Brazilian Portuguese edition. On multilingual sites, the
-page language can differ from the chapter translations available. Previews
-use an image from the matched page when Tavily supplies one.
+Run `manga-downloader search "One Piece"` to find series by title in the Portuguese catalogue.
+Each matching title is followed by its series URL. Use that URL with `list` or the download command.
 
 ## Usage
 
@@ -322,7 +308,6 @@ folder up to date, run it from cron:
 | ---------------------------------- | ------------------------------------------------------------- |
 | `HTTPS_PROXY`, `HTTP_PROXY`        | Proxy for the downloads: `http://`, `https://` or `socks5://` |
 | `NO_PROXY`                         | Hosts that skip the proxy, comma-separated                    |
-| `TAVILY_API_KEY`                   | Tavily key for title searches across supported sites          |
 | `MANGAPLUS_SECRET`                 | Anonymous device secret to use for Manga Plus                 |
 | `MANGA_DOWNLOADER_NO_UPDATE_CHECK` | `1` skips the update check of `version` and `--version`       |
 
