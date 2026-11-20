@@ -4,10 +4,23 @@ Every flag and behaviour of `manga-downloader`, with the [table of all
 flags](#options) at the end. For installing it see the
 [README](../README.md#installing-the-command-line-tool).
 
-## Search ManGeek
+## Search supported sites
 
-Run `manga-downloader search "One Piece"` to find series by title in the Portuguese catalogue.
-Each matching title is followed by its series URL. Use that URL with `list` or the download command.
+Run `manga-downloader search "One Piece"` for matching titles and links. With
+`--json`, each result includes its source, language and a thumbnail URL when
+available. Use a result URL with `list` or the download command.
+
+ManGeek is searched directly. To include indexed pages from the other supported
+sites, save a Brave Search API key in the desktop app’s Settings or export
+`BRAVE_SEARCH_API_KEY` in the shell that runs the command. The environment
+variable takes precedence. The desktop and CLI share the saved key.
+
+A search sends the title to ManGeek and, when configured, to Brave Web Search.
+Brave searches are batched by domain and language (English and Brazilian
+Portuguese). One title search can consume several API requests. Results depend
+on the pages Brave has indexed, their language metadata and ranking. On a
+multilingual site the page language can differ from the available translations.
+The normal series loader handles the selected link.
 
 ## Usage
 
@@ -308,6 +321,7 @@ folder up to date, run it from cron:
 | ---------------------------------- | ------------------------------------------------------------- |
 | `HTTPS_PROXY`, `HTTP_PROXY`        | Proxy for the downloads: `http://`, `https://` or `socks5://` |
 | `NO_PROXY`                         | Hosts that skip the proxy, comma-separated                    |
+| `BRAVE_SEARCH_API_KEY`             | Brave Web Search key for title searches across supported sites |
 | `MANGAPLUS_SECRET`                 | Anonymous device secret to use for Manga Plus                 |
 | `MANGA_DOWNLOADER_NO_UPDATE_CHECK` | `1` skips the update check of `version` and `--version`       |
 

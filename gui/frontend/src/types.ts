@@ -218,7 +218,16 @@ export interface LogLine {
   msg?: Message;
 }
 
+export interface SearchResults {
+  matches: SeriesMatch[];
+  warnings?: string[];
+  needsKey: boolean;
+}
+
 export interface SeriesMatch {
+  source: string;
+  language: string;
+  thumbnail?: string;
   title: string;
   url: string;
 }

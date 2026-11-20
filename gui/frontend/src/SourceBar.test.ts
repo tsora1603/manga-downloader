@@ -18,7 +18,7 @@ function render(state: State): string {
     createElement(SourceBar, {
       state,
       onLoad: () => undefined,
-      searchManGeek: async () => [],
+      searchSeries: async () => ({ matches: [], needsKey: false }),
       readClipboard: () => Promise.resolve(''),
       onClear: () => undefined,
       onOptions: () => Promise.resolve(),
@@ -115,7 +115,7 @@ describe('SourceBar in another language', () => {
         createElement(SourceBar, {
           state,
           onLoad: () => undefined,
-          searchManGeek: async () => [],
+          searchSeries: async () => ({ matches: [], needsKey: false }),
           readClipboard: () => Promise.resolve(''),
           onClear: () => undefined,
           onOptions: () => Promise.resolve(),
@@ -154,7 +154,7 @@ describe('SourceBar settings button', () => {
       createElement(SourceBar, {
         state: base,
         onLoad: () => undefined,
-        searchManGeek: async () => [],
+        searchSeries: async () => ({ matches: [], needsKey: false }),
         readClipboard: () => Promise.resolve(''),
         onClear: () => undefined,
         onOptions: () => Promise.resolve(),
@@ -183,7 +183,7 @@ describe('SourceBar settings button', () => {
         createElement(SourceBar, {
           state: base,
           onLoad: () => undefined,
-          searchManGeek: async () => [],
+          searchSeries: async () => ({ matches: [], needsKey: false }),
           readClipboard: () => Promise.resolve(''),
           onClear: () => undefined,
           onOptions: () => Promise.resolve(),

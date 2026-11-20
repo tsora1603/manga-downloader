@@ -195,7 +195,7 @@ export function App({ api, initial }: { api: Api; initial?: State }) {
       <SourceBar
         state={state}
         onLoad={load}
-        searchManGeek={api.searchManGeek}
+        searchSeries={api.searchSeries}
         readClipboard={() => api.readClipboard()}
         onClear={clear}
         onOptions={setOptions}
@@ -302,6 +302,7 @@ export function App({ api, initial }: { api: Api; initial?: State }) {
         <SettingsDialog
           state={state}
           onClose={() => setSettingsOpen(false)}
+          onSaveSearchKey={api.saveSearchKey}
           onCheckUpdates={(on) => {
             api.setCheckUpdates(on).catch((e: unknown) => setOptionError(errorMessage(e, t)));
           }}

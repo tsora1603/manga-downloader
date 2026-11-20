@@ -12,7 +12,7 @@ import { useI18n } from './i18n/react';
 import { shortcutLabel, isMac } from './settingsShortcut';
 import { AlertIcon, GearIcon, LinkIcon, RefreshIcon, Spinner } from './icons';
 import { Mascot, useExpression, Wordmark } from './Mascot';
-import type { FilterChoice, Options, SeriesMatch, State } from './types';
+import type { FilterChoice, Options, SearchResults, State } from './types';
 
 /** What the clipboard's text means for the URL box: trimmed, or '' when there is nothing to paste */
 export function pasteValue(clipboard: string): string {
@@ -22,7 +22,7 @@ export function pasteValue(clipboard: string): string {
 interface Props {
   state: State;
   onLoad: (url: string) => void;
-  searchManGeek: (title: string) => Promise<SeriesMatch[]>;
+  searchSeries: (title: string) => Promise<SearchResults>;
   /** The clipboard's text, read by the Paste button */
   readClipboard: () => Promise<string>;
   /** The URL box's clear button: empties the field and forgets the loaded series */
@@ -47,7 +47,7 @@ interface Props {
 export function SourceBar({
   state,
   onLoad,
-  searchManGeek,
+  searchSeries,
   readClipboard,
   onClear,
   onOptions,
@@ -65,7 +65,7 @@ export function SourceBar({
   const [typed, setTyped] = useState<string | null>(null);
   const url = typed ?? state.url;
   const busy = state.loading || state.running;
-  const [matches, setMatches] = useState<SeriesMatch[] | null>(null);
+  const [matches, setMatches] = useState<SearchResults | null>(null);
   const [searchError, setSearchError] = useState('');
   const [searching, setSearching] = useState(false);
   const searchID = useRef(0);
@@ -81,7 +81,7 @@ export function SourceBar({
     const id = searchID.current;
     setSearching(true);
     try {
-      const results = await searchManGeek(url.trim());
+      const results = await searchSeries(url.trim());
       if (id === searchID.current) setMatches(results);
     } catch (e) {
       if (id === searchID.current) setSearchError(errorMessage(e, t));
@@ -156,6 +156,7 @@ export function SourceBar({
           data-flip="form"
           onSubmit={(e) => {
             e.preventDefault();
+            if (busy || searching || !url.trim()) return;
             // Enter loads now, so the pending automatic load must not fire too
             clearTimeout(timer.current);
             if (byTitle) void search();
@@ -256,15 +257,24 @@ export function SourceBar({
 
       {searchError && <div className="banner" role="alert">{searchError}</div>}
       {matches !== null && (
-        <div className="mangeek-results" aria-label={t('source.search.results')} role="region">
-          {matches.length === 0 && <span role="status">{t('source.search.empty')}</span>}
-          {matches.map((match) => (
+        <div className="series-results" aria-label={t('source.search.results')} role="region">
+          {matches.needsKey && <span role="status">{t('source.search.needsKey')}</span>}
+          {matches.warnings?.map((message) => <span key={message} role="alert">{message}</span>)}
+          {matches.matches.length === 0 && !matches.warnings?.length && <span role="status">{t('source.search.empty')}</span>}
+          {matches.matches.map((match) => (
             <button type="button" className="btn ghost" key={match.url} disabled={busy} onClick={() => {
               resetSearch();
               setTyped(match.url);
               onLoad(match.url);
             }}>
-              {match.title}
+              {match.thumbnail && (
+                <img src={match.thumbnail} width={40} height={56} loading="lazy" referrerPolicy="no-referrer"
+                  alt="" onError={(e) => { e.currentTarget.hidden = true; }} />
+              )}
+              <span className="series-caption">
+                <strong>{match.title}</strong>
+                <small>{match.source} · {match.language.toUpperCase()}</small>
+              </span>
             </button>
           ))}
         </div>

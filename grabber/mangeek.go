@@ -41,26 +41,24 @@ func (m *ManGeek) Test() (bool, error) {
 
 func (m *ManGeek) WaitPage() { manGeekPacer.wait() }
 
-// ManGeekResult is a series that can be opened directly in the downloader.
-type ManGeekResult struct {
-	Title string `json:"title"`
-	URL   string `json:"url"`
-}
+// ManGeekResult is the catalogue match returned by SearchManGeek.
+type ManGeekResult = SeriesMatch
 
 // SearchManGeek queries the Portuguese catalogue by title.
-func SearchManGeek(query string) ([]ManGeekResult, error) {
+func SearchManGeek(query string) ([]SeriesMatch, error) {
 	query = strings.ToLower(strings.TrimSpace(query))
 	if query == "" {
 		return nil, fmt.Errorf("enter a manga title")
 	}
 	var rows []struct {
-		ID    int64
-		Title string
+		ID        int64
+		Title     string
+		Thumbnail string
 	}
 	if err := manGeekRequest("search", query, &rows); err != nil {
 		return nil, fmt.Errorf("ManGeek search: %w", err)
 	}
-	results := make([]ManGeekResult, 0, len(rows))
+	results := make([]SeriesMatch, 0, len(rows))
 	seen := make(map[int64]bool)
 	for _, row := range rows {
 		title := sanitizeTitle(row.Title)
@@ -68,7 +66,10 @@ func SearchManGeek(query string) ([]ManGeekResult, error) {
 			continue
 		}
 		seen[row.ID] = true
-		results = append(results, ManGeekResult{Title: title, URL: fmt.Sprintf("https://mangeek.app/manga/%d", row.ID)})
+		results = append(results, SeriesMatch{
+			Title: title, URL: fmt.Sprintf("https://mangeek.app/manga/%d", row.ID),
+			Source: "mangeek.app", Language: "pt-br", Thumbnail: manGeekImageURL(row.Thumbnail),
+		})
 	}
 	return results, nil
 }
@@ -169,6 +170,17 @@ func (m *ManGeek) FetchChapter(f Filterable) (*Chapter, error) {
 	return nil, fmt.Errorf("ManGeek chapter %s: %w", c.ID, lastErr)
 }
 
+func manGeekImageURL(raw string) string {
+	u := safeSearchURL(raw)
+	if u == nil {
+		return ""
+	}
+	if u.Host == "51.79.78.152" {
+		u.Host, u.Scheme = "static.geekstations.com.br", "https"
+	}
+	return u.String()
+}
+
 func manGeekPages(route, id string) ([]Page, error) {
 	var data struct{ Pages []string }
 	if err := manGeekRequest(route, id, &data); err != nil {
@@ -179,14 +191,11 @@ func manGeekPages(route, id string) ([]Page, error) {
 	}
 	pages := make([]Page, 0, len(data.Pages))
 	for i, raw := range data.Pages {
-		u, err := url.Parse(strings.TrimSpace(raw))
-		if err != nil || u.Hostname() == "" || (u.Scheme != "https" && u.Scheme != "http") {
+		imageURL := manGeekImageURL(raw)
+		if imageURL == "" {
 			return nil, fmt.Errorf("invalid image URL at page %d on %s", i+1, route)
 		}
-		if u.Host == "51.79.78.152" {
-			u.Host, u.Scheme = "static.geekstations.com.br", "https"
-		}
-		pages = append(pages, Page{Number: int64(i + 1), URL: u.String()})
+		pages = append(pages, Page{Number: int64(i + 1), URL: imageURL})
 	}
 	return pages, nil
 }

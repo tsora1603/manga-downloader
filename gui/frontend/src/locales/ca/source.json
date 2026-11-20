@@ -1,7 +1,7 @@
 {
   "url": {
-    "label": "URL de la sèrie o títol de ManGeek",
-    "placeholder": "Enganxa un enllaç de sèrie o capítol, o escriu un títol de ManGeek",
+    "label": "URL de la sèrie o títol del manga",
+    "placeholder": "Enganxa un enllaç o escriu el títol del manga",
     "clear": "Esborra",
     "clearLabel": "Esborra l'URL",
     "paste": "Enganxa",
@@ -24,8 +24,9 @@
     "appliesOnLoad": "S'aplica en carregar la sèrie"
   },
   "search": {
-    "action": "Cerca a ManGeek",
-    "results": "Resultats de ManGeek",
-    "empty": "No s’han trobat títols a ManGeek."
+    "action": "Cerca",
+    "results": "Resultats de la cerca",
+    "empty": "No s’han trobat títols.",
+    "needsKey": "Només s’ha cercat a ManGeek. Afegeix una clau de l’API de Brave Search a Configuració per incloure altres llocs."
   }
 }

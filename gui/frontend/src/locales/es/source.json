@@ -1,7 +1,7 @@
 {
   "url": {
-    "label": "URL de la serie o título de ManGeek",
-    "placeholder": "Pega un enlace de serie o capítulo, o escribe un título de ManGeek",
+    "label": "URL de la serie o título del manga",
+    "placeholder": "Pega un enlace o escribe el título de un manga",
     "clear": "Borrar",
     "clearLabel": "Borrar la URL",
     "paste": "Pegar",
@@ -24,8 +24,9 @@
     "appliesOnLoad": "Se aplica al cargar la serie"
   },
   "search": {
-    "action": "Buscar en ManGeek",
-    "results": "Resultados de ManGeek",
-    "empty": "No se encontraron títulos en ManGeek."
+    "action": "Buscar",
+    "results": "Resultados de la búsqueda",
+    "empty": "No se encontraron títulos.",
+    "needsKey": "Solo se buscó en ManGeek. Añade una clave de la API de Brave Search en Ajustes para incluir otros sitios."
   }
 }

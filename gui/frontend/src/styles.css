@@ -2550,20 +2550,25 @@ a.version:hover {
   color: var(--text-3);
 }
 
-.mangeek-results {
+.series-results {
   display: grid;
   gap: 4px;
   max-height: 25vh;
   overflow-y: auto;
 }
 
-.source.simple .mangeek-results {
+.source.simple .series-results {
   width: min(640px, 100%);
   justify-self: center;
 }
 
-.mangeek-results button {
+.series-results button {
   justify-content: flex-start;
   text-align: start;
   white-space: normal;
 }
+
+.series-results button img { object-fit: cover; border-radius: 3px; }
+.series-caption { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.series-caption small { color: var(--text-3); }
+.search-key { display: grid; gap: 6px; }

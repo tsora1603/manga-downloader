@@ -23,5 +23,12 @@
     "issues": "Informar de un problema",
     "kofi": "Apóyame en Ko-fi",
     "madeBy": "Hecho con amor por <author>{{author}}</author> · © {{years}} · <license>{{license}}</license>"
+  },
+  "search": {
+    "key": "Clave de la API de Brave Search",
+    "save": "Guardar clave",
+    "remove": "Eliminar clave guardada",
+    "saved": "Clave guardada.",
+    "removed": "Clave guardada eliminada."
   }
 }

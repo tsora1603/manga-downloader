@@ -12,7 +12,14 @@ The app opens on a simple start screen: the logo, the URL box with its *Paste*
 button, *Load* and *Settings*. (To open on the full window instead, turn off
 *Open with the simple view* under *Settings* → *Start screen*.) From there:
 
-For ManGeek, type the manga title in the URL box and press Enter or click **Search ManGeek**. Select a result to load its chapters.
+Type a manga title in the URL box and press Enter or click **Search**. Each
+result shows its title, site, language and a thumbnail if available. Select
+a result to load its chapters. ManGeek works directly. To also search Brave’s
+index of supported English and Brazilian Portuguese sites, open **Settings**,
+enter your **Brave Search API key**, and click **Save key**. The app saves the
+key in the per-user configuration folder for both the app and the CLI. You can
+get a key from the [Brave Search API dashboard](https://api-dashboard.search.brave.com/).
+Each title search can use several API requests.
 
 1. **Paste the series' URL** into the box (or use its *Paste* button). The
    series loads on its own once you paste or stop typing; *Load* or Enter

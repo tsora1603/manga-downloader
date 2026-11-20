@@ -120,7 +120,7 @@ function components({ state, chapters, selected, log }: Snapshot): Screen[] {
       element: createElement(SourceBar, {
         state,
         onLoad: noop,
-        searchManGeek: async () => [],
+        searchSeries: async () => ({ matches: [], needsKey: false }),
         readClipboard: () => Promise.resolve(''),
         onClear: noop,
         onOptions: later,
@@ -185,6 +185,7 @@ function components({ state, chapters, selected, log }: Snapshot): Screen[] {
       element: createElement(SettingsDialog, {
         state,
         onClose: noop,
+        onSaveSearchKey: async () => {},
         onCheckUpdates: noop,
         onSimpleStart: noop,
         onOpenURL: noop,
@@ -197,6 +198,7 @@ function components({ state, chapters, selected, log }: Snapshot): Screen[] {
       element: createElement(SettingsDialog, {
         state: { ...state, releaseURL: '' },
         onClose: noop,
+        onSaveSearchKey: async () => {},
         onCheckUpdates: noop,
         onSimpleStart: noop,
         onOpenURL: noop,
